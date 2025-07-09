@@ -95,15 +95,15 @@ print_status "This may take several minutes on first run..."
 docker-compose build
 
 # Start core services first
-print_status "Starting core services (database, redis, ollama)..."
-docker-compose up -d postgres redis ollama
+print_status "Starting core services (database, redis)..."
+docker-compose up -d postgres redis
 
 # Wait for core services to be healthy
 print_status "Waiting for core services to be ready..."
 sleep 10
 
 # Check if services are healthy
-for service in postgres redis ollama; do
+for service in postgres redis; do
     print_status "Checking $service health..."
     timeout=60
     while [ $timeout -gt 0 ]; do
@@ -136,16 +136,18 @@ while [ $timeout -gt 0 ]; do
     timeout=$((timeout-2))
 done
 
-# Step 5: Initialize Ollama models
-print_status "Step 5: Downloading and initializing Ollama AI models..."
-
-models=("llama3.1:8b" "qwen2.5:7b")
-for model in "${models[@]}"; do
-    print_status "Pulling model: $model"
-    docker-compose exec -T ollama ollama pull "$model" || {
-        print_warning "Failed to pull $model, but continuing..."
-    }
-done
+# Step 5: Check Ollama availability
+print_status "Step 5: Checking Ollama availability..."
+if curl -f http://localhost:11434/api/tags &>/dev/null; then
+    print_success "Ollama is running on localhost:11434"
+    print_status "Skipping model downloads (models are large - download manually if needed)"
+    print_status "To download models manually:"
+    echo "  ollama pull llama3.1:8b"
+    echo "  ollama pull qwen2.5:7b"
+else
+    print_warning "Ollama not running on localhost:11434"
+    print_warning "Please start Ollama manually: 'ollama serve'"
+fi
 
 # Step 6: Initialize database and load data
 print_status "Step 6: Loading S&P 500 company data..."
@@ -163,7 +165,7 @@ docker-compose up -d agent-orchestrator
 # Step 8: Verify system health
 print_status "Step 8: Verifying system health..."
 
-services=("frontend:3000" "backend:8000" "ollama:11434")
+services=("frontend:3000" "backend:8000")
 for service_port in "${services[@]}"; do
     service=$(echo $service_port | cut -d: -f1)
     port=$(echo $service_port | cut -d: -f2)
@@ -188,12 +190,12 @@ echo "🌐 Access Points:"
 echo "================="
 echo "• Web Interface:    http://localhost:3000"
 echo "• API Documentation: http://localhost:8000/docs"
-echo "• Ollama API:       http://localhost:11434"
+echo "• Ollama API:       http://localhost:11434 (if running locally)"
 echo ""
 
 echo "🤖 Available AI Models:"
 echo "======================"
-docker-compose exec -T ollama ollama list 2>/dev/null || echo "  (Run 'docker-compose exec ollama ollama list' to see models)"
+curl -s http://localhost:11434/api/tags 2>/dev/null | grep -o '"name":"[^"]*"' | cut -d'"' -f4 2>/dev/null || echo "  (Start Ollama with 'ollama serve' to see models)"
 
 echo ""
 echo "📊 Quick Test Commands:"

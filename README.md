@@ -1,328 +1,306 @@
 # Calvin Stock Prediction Tool
 
-AI-powered stock market prediction tool for S&P 500 earnings analysis using Ollama, MCP, and vector embeddings.
+An AI-powered stock prediction system focused on predicting next-day performance after earnings announcements using MCP (Model Context Protocol) servers and Ollama AI agents.
 
-## Features
-
-- **AI-Powered Analysis**: Ollama agents for deep earnings pattern analysis
-- **Real-time Predictions**: Next-day stock performance predictions after earnings
-- **Interactive Dashboard**: React frontend with earnings calendar and prediction results
-- **Vector Search**: RAG-based historical pattern matching using pgvector
-- **MCP Integration**: Multiple Model Context Protocol servers for data collection
-- **Comprehensive Analytics**: Sector performance, analyst accuracy, insider trading analysis
-
-## Architecture
-
-### Core Components
-
-- **Frontend**: React + TypeScript with Tailwind CSS
-- **Backend**: FastAPI with async database operations
-- **AI Agents**: Ollama-powered agents (Llama3.1, Qwen2.5)
-- **Database**: PostgreSQL with pgvector for embeddings
-- **Cache**: Redis for API response caching
-- **Data Pipeline**: MCP-based financial data collection
-
-### Directory Structure
-
-```
-calvin/
-├── frontend/                 # React + TypeScript web app
-├── backend/                  # FastAPI application
-├── agents/                   # Ollama AI agents
-├── assets/                   # Permanent data storage
-├── services/                 # MCP servers
-├── docker/                   # Docker configurations
-├── scripts/                  # Utility scripts
-└── docker-compose.yml        # Service orchestration
-```
-
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
+- Python 3.8+
+- Node.js 16+ (for NPX installation)
+- pip (Python package manager)
+- Ollama (optional, for AI features)
 
-- Docker & Docker Compose
-- Python 3.11+
-- Node.js 18+ (for frontend development)
-- uv (Python package manager)
+### Installation & Setup
 
-### 1. API Keys Setup
+1. **Clone and navigate to the project:**
+   ```bash
+   git clone <repository-url>
+   cd calvin
+   ```
 
-```bash
-# Copy API keys template
-cp config/api_keys.env.example config/api_keys.env
+2. **Install and run using NPX:**
+   ```bash
+   npx calvin-stock-prediction-tool
+   ```
 
-# Edit config/api_keys.env with your actual API keys
-# Get free API keys from:
-# - Polygon.io: https://polygon.io/ (5 calls/minute free)
-# - Alpha Vantage: https://www.alphavantage.co/ (500 calls/day free)
-# - Tavily: https://tavily.com/ (1,000 credits/month free)
-# - Financial Modeling Prep: https://financialmodelingprep.com/ (250 requests free)
+3. **Or install dependencies manually:**
+   ```bash
+   pip install -r requirements.txt
+   python main_client.py
+   ```
 
-# Export API keys to environment
-source config/export_api_keys.sh
+4. **Access the web interface:**
+   Open http://localhost:3000 in your browser
+
+## 🏗️ Architecture Overview
+
+The system uses a **proper MCP (Model Context Protocol) architecture** with FastMCP Client pattern:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Main Client (Port 3000)                     │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │   Web Interface │  │   AI Agent      │  │   API Gateway   │ │
+│  │                 │  │   (Ollama)      │  │                 │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │           CalvinMCPClient (FastMCP Client)                  │ │
+│  │    Uses mcpServers config to launch and manage servers     │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                    ┌───────────┴───────────┐
+                    │   MCP Servers Config   │
+                    └───────────────────────┘
+         ┌─────────────┬─────────────┬─────────────┐
+         │             │             │             │
+    ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
+    │Company  │  │Earnings │  │Prediction│  │Finance  │
+    │Server   │  │Server   │  │Server   │  │Server   │
+    └─────────┘  └─────────┘  └─────────┘  └─────────┘
+         │
+    ┌─────────┐
+    │Sentiment│
+    │Server   │
+    └─────────┘
 ```
 
-### 2. Automated Setup (Recommended)
+## 📦 MCP Servers
+
+The system uses **proper MCP pattern** with FastMCP Client managing server processes through `mcpServers` configuration:
+
+### 1. Company Server
+- **Purpose:** S&P 500 company data management
+- **Tools:** `get_companies`, `get_company_by_symbol`, `search_companies`, `add_company`
+- **Resources:** `companies://list`, `companies://sectors`
+- **Launch:** Managed by CalvinMCPClient via python server.py
+
+### 2. Earnings Server
+- **Purpose:** Earnings analysis and calendar management
+- **Tools:** `get_earnings_calendar`, `analyze_earnings_surprise`, `find_similar_earnings_patterns`
+- **Resources:** `earnings://calendar`, `earnings://recent`
+- **Launch:** Managed by CalvinMCPClient via python server.py
+
+### 3. Prediction Server
+- **Purpose:** Next-day stock performance predictions
+- **Tools:** `predict_next_day_performance`, `get_top_predictions`, `analyze_prediction_accuracy`
+- **Resources:** `predictions://recent`, `predictions://summary`
+- **Launch:** Managed by CalvinMCPClient via python server.py
+
+### 4. Finance Server
+- **Purpose:** Market data and stock information
+- **Tools:** `get_stock_price`, `get_market_data`, `get_company_info`, `get_market_indices`
+- **Resources:** `finance://market-status`, `finance://sp500`
+- **Launch:** Managed by CalvinMCPClient via python server.py
+
+### 5. Sentiment Server
+- **Purpose:** Financial text sentiment analysis
+- **Tools:** `analyze_sentiment`, `analyze_earnings_sentiment`, `batch_sentiment_analysis`
+- **Resources:** `sentiment://financial-keywords`
+- **Launch:** Managed by CalvinMCPClient via python server.py
+
+## 🤖 AI Agent Integration
+
+The system includes an **Ollama-powered AI agent** that provides:
+
+- **Stock Analysis:** AI-powered insights on market data
+- **Chat Interface:** Natural language interaction for queries
+- **Prediction Explanations:** Human-readable reasoning for predictions
+- **Market Context:** Intelligent interpretation of financial data
+
+### AI Features
+- Real-time chat interface via WebSocket
+- Automated stock analysis with context
+- Pattern recognition and historical comparisons
+- Natural language explanations of predictions
+
+## 🌐 Web Interface
+
+The simplified web interface provides:
+
+- **Server Status Dashboard:** Real-time monitoring of all MCP servers
+- **Stock Analysis:** Enter symbols for comprehensive analysis
+- **Earnings Predictions:** Get next-day performance predictions
+- **Company Search:** Find S&P 500 companies by name or symbol
+- **AI Chat:** Interactive chat with the AI assistant
+
+## 🔧 Development
+
+### Running Individual MCP Servers
 
 ```bash
-# Run complete system initialization
-./scripts/init_system.sh
+# Company Server
+cd packages/mcp-company-server
+python server.py
 
-# This script will:
-# - Check prerequisites
-# - Setup API keys
-# - Build and start all services
-# - Download AI models
-# - Load S&P 500 data
-# - Verify system health
+# Earnings Server
+cd packages/mcp-earnings-server
+python server.py
+
+# And so on...
 ```
 
-### 3. Manual Setup (Alternative)
+### API Documentation
 
+Once running, visit `http://localhost:3000/docs` for interactive API documentation.
+
+### Key API Endpoints
+
+- `GET /api/health` - System health check
+- `GET /api/servers` - MCP server status
+- `POST /api/tools/{server}/{tool}` - Call MCP server tools
+- `GET /api/resources/{server}/{resource}` - Get MCP server resources
+- `POST /api/ai/analyze` - AI stock analysis
+- `POST /api/ai/chat` - Chat with AI agent
+- `WS /ws` - WebSocket for real-time updates
+
+## 📊 Data Storage
+
+The system uses **file-based storage** for simplicity:
+
+```
+assets/
+├── sp500_companies/     # Company profiles (JSON)
+├── earnings_data/       # Historical earnings data
+├── predictions/         # Prediction history
+└── insider_trading/     # Insider trading data
+```
+
+## 🎯 Core Features
+
+### Stock Prediction Pipeline
+1. **Data Collection:** Real-time market data via yfinance
+2. **Sentiment Analysis:** Financial text analysis with TextBlob
+3. **Pattern Matching:** Historical earnings pattern recognition
+4. **AI Analysis:** Ollama-powered intelligent insights
+5. **Prediction Generation:** Next-day performance forecasts
+6. **Accuracy Tracking:** Historical prediction performance
+
+### Earnings Focus
+- **Earnings Calendar:** Track upcoming S&P 500 earnings
+- **Surprise Analysis:** Beat/miss/meet categorization
+- **Historical Patterns:** Find similar earnings scenarios
+- **Sentiment Tracking:** Pre/post earnings sentiment analysis
+
+## 📈 Usage Examples
+
+### Analyze a Stock
 ```bash
-# Export API keys
-source config/export_api_keys.sh
-
-# Start all services
-docker-compose up -d
-
-# Initialize Ollama models
-docker-compose exec ollama ollama pull llama3.1:8b
-docker-compose exec ollama ollama pull qwen2.5:7b
-
-# Load S&P 500 data
-docker-compose exec backend uv run scripts/load_sp500_data.py
+curl -X POST http://localhost:3000/api/tools/finance/get_stock_price \
+  -H "Content-Type: application/json" \
+  -d '{"symbol": "AAPL"}'
 ```
-
-### 4. Access Applications
-
-- **Web Interface**: http://localhost:3000
-- **API Documentation**: http://localhost:8000/docs
-- **Ollama API**: http://localhost:11434
-
-## Development
-
-### Backend Development
-
-```bash
-cd backend
-
-# Install dependencies
-uv sync
-
-# Run development server
-uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# Run database migrations
-uv run alembic upgrade head
-```
-
-### Frontend Development
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-```
-
-### Agent Development
-
-```bash
-# Test individual agents
-uv run agents/analysis_agent.py
-uv run agents/prediction_agent.py
-
-# Test agent orchestration
-uv run python -m agents.orchestrator
-```
-
-## API Usage
 
 ### Get Earnings Calendar
-
 ```bash
-curl "http://localhost:8000/api/v1/earnings/calendar?start_date=2024-01-01&end_date=2024-01-31"
-```
-
-### Generate Prediction
-
-```bash
-curl -X POST "http://localhost:8000/api/v1/predictions/AAPL/generate" \
+curl -X POST http://localhost:3000/api/tools/earnings/get_earnings_calendar \
   -H "Content-Type: application/json" \
-  -d '{"target_date": "2024-02-01"}'
+  -d '{"limit": 10}'
 ```
 
-### Query AI Agents
-
+### AI Stock Analysis
 ```bash
-curl -X POST "http://localhost:8000/api/v1/agents/query" \
+curl -X POST http://localhost:3000/api/ai/analyze \
   -H "Content-Type: application/json" \
-  -d '{
-    "query": "Analyze AAPL earnings patterns",
-    "agent_type": "analysis"
-  }'
+  -d '{"symbol": "AAPL", "market_data": {"price": 150, "change": 2.5}}'
 ```
 
-## Data Sources
+## 🛠️ Configuration
 
-### Supported APIs
+### Environment Variables
+```bash
+# Ollama Configuration
+OLLAMA_BASE_URL=http://localhost:11434
 
-- **Alpha Vantage**: 500 calls/day (free tier)
-- **Polygon.io**: 5 calls/minute (free tier)
-- **Yahoo Finance**: No formal limits (unofficial)
-- **Tavily**: 1,000 credits/month (free tier)
-
-### Data Pipeline
-
-1. **S&P 500 Company Bootstrap**: Fetch complete company list and fundamentals
-2. **Daily Data Collection**: Earnings calendar, news sentiment, analyst updates
-3. **Historical Analysis**: Pattern recognition and backtesting
-4. **Prediction Generation**: ML models with AI-generated explanations
-
-## AI Agents
-
-### Analysis Agent (Llama3.1:8b)
-- Earnings pattern analysis
-- Statistical correlation analysis
-- Historical performance evaluation
-
-### Research Agent (Qwen2.5:7b)
-- News sentiment analysis
-- Earnings call transcript analysis
-- Market intelligence gathering
-
-### Prediction Agent (Llama3.1:8b)
-- Stock movement predictions
-- Confidence assessment
-- Risk factor analysis
-
-### Query Agent (Qwen2.5:7b)
-- Natural language data queries
-- Similar scenario identification
-- Historical pattern explanation
-
-## Web Interface Features
-
-### Dashboard
-- Upcoming earnings calendar with predictions
-- Market sentiment overview
-- High-confidence prediction highlights
-- S&P 500 performance statistics
-
-### Company Profiles
-- Historical earnings performance
-- Beat/miss/meet tracking
-- Analyst accuracy analysis
-- Insider trading patterns
-
-### Agent Chat
-- Natural language queries: "How did AAPL perform after beating earnings in Q3 2023?"
-- Pattern recognition: "Find companies similar to MSFT's current setup"
-- AI-generated prediction explanations
-
-### Analytics
-- Sector performance comparison
-- Volatility analysis around earnings
-- Backtesting results
-- Prediction model accuracy tracking
-
-## Configuration
-
-### Rate Limiting
-
-```yaml
-# Free tier limits
-ALPHA_VANTAGE_DAILY_LIMIT: 500
-POLYGON_MINUTE_LIMIT: 5
-TAVILY_MONTHLY_LIMIT: 1000
-
-# Strategies
-- Alpha Vantage: Spread 500 calls across 24 hours
-- Polygon.io: Queue requests with 12-second intervals
-- Tavily: Reserve for targeted earnings searches
+# MCP Server Ports (optional)
+MCP_COMPANY_PORT=8001
+MCP_EARNINGS_PORT=8002
+MCP_PREDICTION_PORT=8003
+MCP_FINANCE_PORT=8004
+MCP_SENTIMENT_PORT=8005
 ```
 
-### Vector Embeddings
+### Ollama Setup (Optional)
+```bash
+# Install Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
 
-```sql
--- pgvector configuration
-CREATE INDEX earnings_embeddings_hnsw_idx ON earnings_embeddings 
-USING hnsw (combined_embedding vector_cosine_ops);
+# Pull recommended models
+ollama pull llama3.1:8b
+ollama pull qwen2.5:7b
 
--- Similarity search
-SELECT * FROM find_similar_earnings(target_embedding, 0.8, 10);
+# Start Ollama
+ollama serve
 ```
 
-## Testing
+## 🔍 Monitoring
+
+### Health Checks
+- Main client: `http://localhost:3000/api/health`
+- Individual servers: `http://localhost:800X/health`
+
+### Logs
+- All services log to stdout
+- WebSocket connections for real-time updates
+- Server status monitoring in web interface
+
+## 🧪 Testing
 
 ```bash
 # Run all tests
-uv run pytest
+python -m pytest tests/
 
-# Test specific components
-uv run pytest tests/test_agents.py
-uv run pytest tests/test_api_integration.py
+# Test specific server
+python -m pytest tests/test_company_server.py
 
-# Frontend tests
-cd frontend && npm test
-
-# Integration tests with rate limiting
-uv run pytest tests/test_api_integration.py --slow
+# Test AI integration
+python -m pytest tests/test_ai_agent.py
 ```
 
-## Deployment
+## 🚨 Troubleshooting
 
-### Production Considerations
+### Common Issues
 
-1. **API Keys**: Store in secure secret management
-2. **Rate Limiting**: Implement proper throttling and caching
-3. **Monitoring**: Track API usage against free tier limits
-4. **Scaling**: Use Kubernetes for multi-instance deployment
-5. **Data Persistence**: Regular database backups
-6. **Security**: HTTPS, authentication, input validation
+1. **MCP Server Won't Start**
+   - Check port availability: `lsof -i :8001`
+   - Verify Python dependencies: `pip list`
 
-### Docker Production
+2. **AI Features Not Working**
+   - Ensure Ollama is running: `curl http://localhost:11434/api/tags`
+   - Check available models: `ollama list`
 
+3. **Web Interface Connection Issues**
+   - Verify main client is running on port 3000
+   - Check WebSocket connection in browser console
+
+### Debug Mode
 ```bash
-# Build production images
-docker-compose -f docker-compose.prod.yml build
-
-# Deploy with restart policies
-docker-compose -f docker-compose.prod.yml up -d
+# Run with debug logging
+python main_client.py --log-level debug
 ```
 
-## Monitoring
+## 📄 License
 
-- **API Usage**: Daily call counts against free tier limits
-- **Data Quality**: Validation of incoming data completeness
-- **Prediction Performance**: Track accuracy against actual returns
-- **Service Health**: Monitor agent availability and response times
+MIT License - see LICENSE file for details.
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all tests pass
+3. Make your changes
+4. Add tests
 5. Submit a pull request
 
-## License
+## 🔮 Future Enhancements
 
-MIT License - see LICENSE.md for details
-
-## Support
-
-- **Issues**: GitHub Issues
-- **Documentation**: /docs directory
-- **API Reference**: http://localhost:8000/docs
+- **Real-time Data:** WebSocket feeds for live market data
+- **Advanced ML:** Deep learning models for prediction accuracy
+- **Portfolio Management:** Track and analyze multiple positions
+- **Risk Management:** Volatility analysis and risk scoring
+- **Mobile App:** React Native mobile interface
+- **API Integration:** Additional data sources (Alpha Vantage, Polygon.io)
 
 ---
 
-🤖 **Calvin** - AI-powered stock prediction for the modern investor
+**Built with ❤️ using FastMCP, Ollama, and modern web technologies**

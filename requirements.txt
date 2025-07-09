@@ -1,0 +1,23 @@
+# Calvin Stock Prediction Tool - Main Client Dependencies
+fastapi>=0.100.0
+uvicorn>=0.24.0
+httpx>=0.26.0
+websockets==12.0
+python-multipart==0.0.6
+jinja2==3.1.2
+
+# MCP Server Dependencies
+fastmcp==0.1.0
+mcp==1.0.0
+yfinance==0.2.18
+textblob==0.17.1
+requests==2.31.0
+aiohttp==3.9.1
+
+# Data handling
+pandas==2.1.4
+numpy==1.24.4
+python-dateutil==2.8.2
+
+# Optional: For enhanced AI features
+# ollama==0.1.0  # Uncomment if you want to use Ollama Python client

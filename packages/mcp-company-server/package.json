@@ -1,0 +1,21 @@
+{
+  "name": "mcp-company-server",
+  "version": "1.0.0",
+  "description": "MCP server for S&P 500 company data management",
+  "main": "server.py",
+  "bin": {
+    "mcp-company-server": "./server.py"
+  },
+  "scripts": {
+    "start": "python server.py"
+  },
+  "dependencies": {
+    "fastmcp": "^0.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["mcp", "company", "stock", "s&p500"],
+  "author": "Calvin Stock Prediction Tool",
+  "license": "MIT"
+}

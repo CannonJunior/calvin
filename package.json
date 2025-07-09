@@ -1,0 +1,49 @@
+{
+  "name": "calvin-stock-prediction-tool",
+  "version": "1.0.0",
+  "description": "AI-powered stock prediction tool with earnings analysis",
+  "main": "main_client.py",
+  "bin": {
+    "calvin": "./start.sh"
+  },
+  "scripts": {
+    "start": "python main_client.py",
+    "dev": "python main_client.py",
+    "install-deps": "pip install -r requirements.txt",
+    "setup": "npm run install-deps && python -c 'import nltk; nltk.download(\"punkt\"); nltk.download(\"brown\")'",
+    "test": "python -m pytest tests/",
+    "build": "echo 'Building Calvin Stock Prediction Tool...'",
+    "clean": "find . -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true"
+  },
+  "keywords": [
+    "stock",
+    "prediction",
+    "earnings",
+    "analysis",
+    "ai",
+    "mcp",
+    "ollama",
+    "finance"
+  ],
+  "author": "Calvin Stock Prediction Tool",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "python": ">=3.8"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "preferGlobal": true,
+  "files": [
+    "main_client.py",
+    "requirements.txt",
+    "start.sh",
+    "packages/",
+    "assets/",
+    "frontend/"
+  ]
+}

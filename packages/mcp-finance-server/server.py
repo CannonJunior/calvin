@@ -1,9 +1,7 @@
-# Copyright 2025 CannonJunior
-  
-# This file is part of mcp_experiments, and is released under the "MIT License Agreement".
-# Please see the LICENSE.md file that should have been included as part of this package.
-# Enhanced MCP Finance Server with comprehensive financial data tools
-# Usage: uv run finance_server.py
+#!/usr/bin/env python3
+"""
+MCP Finance Server - Enhanced financial data tools for Calvin Stock Prediction Tool
+"""
 
 from fastmcp import FastMCP
 import yfinance as yf

@@ -1,0 +1,22 @@
+{
+  "name": "mcp-sentiment-server",
+  "version": "1.0.0",
+  "description": "MCP server for sentiment analysis",
+  "main": "server.py",
+  "bin": {
+    "mcp-sentiment-server": "./server.py"
+  },
+  "scripts": {
+    "start": "python server.py"
+  },
+  "dependencies": {
+    "fastmcp": "^0.1.0",
+    "textblob": "^0.15.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["mcp", "sentiment", "analysis", "nlp"],
+  "author": "Calvin Stock Prediction Tool",
+  "license": "MIT"
+}

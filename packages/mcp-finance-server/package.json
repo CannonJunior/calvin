@@ -1,0 +1,23 @@
+{
+  "name": "mcp-finance-server",
+  "version": "1.0.0",
+  "description": "MCP server for financial data management",
+  "main": "server.py",
+  "bin": {
+    "mcp-finance-server": "./server.py"
+  },
+  "scripts": {
+    "start": "python server.py"
+  },
+  "dependencies": {
+    "fastmcp": "^0.1.0",
+    "yfinance": "^0.2.0",
+    "requests": "^2.28.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["mcp", "finance", "data", "yfinance"],
+  "author": "Calvin Stock Prediction Tool",
+  "license": "MIT"
+}

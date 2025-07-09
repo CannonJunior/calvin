@@ -1,0 +1,116 @@
+{
+  "mcpServers": {
+    "company-data": {
+      "command": "python",
+      "args": ["mcp_servers/company_server.py"],
+      "env": {},
+      "description": "Company data management server for S&P 500 companies",
+      "capabilities": ["tools", "resources"],
+      "tools": [
+        "get_companies",
+        "get_company_by_symbol", 
+        "add_company",
+        "get_sectors",
+        "search_companies"
+      ],
+      "resources": [
+        "companies://list",
+        "companies://sectors"
+      ]
+    },
+    "earnings-analysis": {
+      "command": "python", 
+      "args": ["mcp_servers/earnings_server.py"],
+      "env": {},
+      "description": "Earnings analysis and calendar management server",
+      "capabilities": ["tools", "resources"],
+      "tools": [
+        "get_earnings_calendar",
+        "get_company_earnings_history",
+        "analyze_earnings_surprise",
+        "save_earnings_result",
+        "get_earnings_sentiment_summary",
+        "find_similar_earnings_patterns"
+      ],
+      "resources": [
+        "earnings://calendar",
+        "earnings://recent"
+      ]
+    },
+    "stock-predictions": {
+      "command": "python",
+      "args": ["mcp_servers/prediction_server.py"], 
+      "env": {},
+      "description": "Stock prediction engine for next-day performance analysis",
+      "capabilities": ["tools", "resources"],
+      "tools": [
+        "predict_next_day_performance",
+        "save_prediction",
+        "get_prediction_history",
+        "analyze_prediction_accuracy",
+        "get_batch_predictions",
+        "get_top_predictions"
+      ],
+      "resources": [
+        "predictions://recent",
+        "predictions://summary"
+      ]
+    },
+    "finance-data": {
+      "command": "python",
+      "args": ["finance_server.py"],
+      "env": {},
+      "description": "Financial market data and stock information server",
+      "capabilities": ["tools", "resources", "prompts"],
+      "tools": [
+        "get_stock_price",
+        "get_market_data",
+        "get_company_info",
+        "get_earnings_calendar",
+        "get_market_indices",
+        "search_stocks"
+      ],
+      "resources": [
+        "finance://market-status",
+        "finance://sp500"
+      ],
+      "prompts": [
+        "stock-analysis"
+      ]
+    },
+    "sentiment-analysis": {
+      "command": "python",
+      "args": ["sentiment_analysis_server.py"],
+      "env": {},
+      "description": "Financial sentiment analysis server with earnings focus",
+      "capabilities": ["tools", "resources", "prompts"],
+      "tools": [
+        "analyze_sentiment",
+        "analyze_earnings_sentiment",
+        "batch_sentiment_analysis",
+        "sentiment_trend_analysis",
+        "extract_key_sentiments"
+      ],
+      "resources": [
+        "sentiment://financial-keywords"
+      ],
+      "prompts": [
+        "sentiment-analysis"
+      ]
+    }
+  },
+  "settings": {
+    "timeout": 30000,
+    "retries": 3,
+    "log_level": "INFO",
+    "concurrent_connections": 5
+  },
+  "security": {
+    "allowed_hosts": ["localhost", "127.0.0.1"],
+    "max_request_size": "10MB",
+    "rate_limit": {
+      "requests_per_minute": 1000,
+      "burst_size": 100
+    }
+  }
+}

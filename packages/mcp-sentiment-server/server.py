@@ -1,9 +1,7 @@
-# Copyright 2025 CannonJunior
-  
-# This file is part of mcp_experiments, and is released under the "MIT License Agreement".
-# Please see the LICENSE.md file that should have been included as part of this package.
-# Enhanced MCP Sentiment Analysis Server for financial text analysis
-# Usage: uv run sentiment_analysis_server.py
+#!/usr/bin/env python3
+"""
+MCP Sentiment Analysis Server for financial text analysis
+"""
 
 from fastmcp import FastMCP
 from textblob import TextBlob

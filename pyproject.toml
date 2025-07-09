@@ -3,40 +3,38 @@ name = "calvin-stock-prediction"
 version = "0.1.0"
 description = "AI-powered stock market prediction tool for S&P 500 earnings analysis"
 authors = [
-    { name = "CannonJunior", email = "cannonjunior@example.com" }
+    { name = "Calvin Stock Prediction Tool", email = "calvin@example.com" }
 ]
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 
 dependencies = [
-    "fastapi>=0.104.0",
-    "uvicorn[standard]>=0.24.0",
-    "sqlalchemy>=2.0.0",
-    "alembic>=1.12.0",
-    "asyncpg>=0.29.0",
-    "redis>=5.0.0",
-    "pandas>=2.1.0",
-    "numpy>=1.24.0",
-    "scikit-learn>=1.3.0",
-    "yfinance>=0.2.28",
-    "requests>=2.31.0",
-    "aiohttp>=3.9.0",
-    "pydantic>=2.5.0",
-    "pydantic-settings>=2.1.0",
-    "fastmcp>=0.2.0",
-    "transformers>=4.35.0",
-    "torch>=2.1.0",
-    "sentence-transformers>=2.2.0",
-    "openai>=1.3.0",
+    "fastapi>=0.104.1",
+    "uvicorn>=0.24.0",
+    "httpx>=0.25.2",
     "websockets>=12.0",
     "python-multipart>=0.0.6",
-    "python-jose[cryptography]>=3.3.0",
-    "passlib[bcrypt]>=1.7.4",
-    "psycopg2-binary>=2.9.0",
-    "celery>=5.3.0",
-    "flower>=2.0.1",
+    "jinja2>=3.1.2",
+    "fastmcp>=0.1.0",
+    "mcp>=1.0.0",
+    "yfinance>=0.2.18",
+    "textblob>=0.17.1",
+    "requests>=2.31.0",
+    "aiohttp>=3.9.1",
+    "pandas>=2.1.4",
+    "numpy>=1.24.4",
+    "python-dateutil>=2.8.2",
+    "ollama>=0.5.1",
 ]
+
+[project.scripts]
+calvin = "calvin_main:main"
+
+[project.urls]
+Homepage = "https://github.com/calvin-stock-prediction/calvin"
+Repository = "https://github.com/calvin-stock-prediction/calvin"
+Documentation = "https://github.com/calvin-stock-prediction/calvin#readme"
 
 [project.optional-dependencies]
 dev = [
@@ -56,39 +54,34 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+include = [
+    "calvin_main.py",
+    "calvin_mcp_client.py",
+    "packages/*/server.py",
+    "packages/*/package.json",
+    "web/",
+    "assets/",
+    "start.sh",
+    "README.md",
+    "requirements.txt",
+]
+
 [tool.black]
 line-length = 88
-target-version = ['py311']
+target-version = ['py38']
 include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
 
 [tool.isort]
 profile = "black"
 multi_line_output = 3
 line_length = 88
-known_first_party = ["app", "agents", "services"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.8"
 check_untyped_defs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
 warn_return_any = true
 strict_equality = true
 
@@ -99,15 +92,3 @@ python_classes = "Test*"
 python_functions = "test_*"
 addopts = "-v --tb=short"
 asyncio_mode = "auto"
-
-[tool.coverage.run]
-source = ["app", "agents", "services"]
-omit = ["*/tests/*", "*/__pycache__/*", "*/migrations/*"]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-]

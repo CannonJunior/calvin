@@ -1,0 +1,21 @@
+{
+  "name": "mcp-prediction-server",
+  "version": "1.0.0",
+  "description": "MCP server for stock prediction engine",
+  "main": "server.py",
+  "bin": {
+    "mcp-prediction-server": "./server.py"
+  },
+  "scripts": {
+    "start": "python server.py"
+  },
+  "dependencies": {
+    "fastmcp": "^0.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["mcp", "prediction", "stock", "ml"],
+  "author": "Calvin Stock Prediction Tool",
+  "license": "MIT"
+}

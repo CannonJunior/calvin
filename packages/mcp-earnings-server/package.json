@@ -1,0 +1,21 @@
+{
+  "name": "mcp-earnings-server",
+  "version": "1.0.0",
+  "description": "MCP server for earnings analysis and calendar management",
+  "main": "server.py",
+  "bin": {
+    "mcp-earnings-server": "./server.py"
+  },
+  "scripts": {
+    "start": "python server.py"
+  },
+  "dependencies": {
+    "fastmcp": "^0.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["mcp", "earnings", "analysis", "calendar"],
+  "author": "Calvin Stock Prediction Tool",
+  "license": "MIT"
+}
