@@ -1,0 +1,23 @@
+{
+  "total_companies": 50,
+  "sectors": {
+    "Industrials": 4,
+    "Health Care": 5,
+    "Information Technology": 11,
+    "Utilities": 6,
+    "Financials": 10,
+    "Materials": 3,
+    "Consumer Discretionary": 3,
+    "Real Estate": 2,
+    "Communication Services": 3,
+    "Consumer Staples": 2,
+    "Energy": 1
+  },
+  "last_updated": "2025-07-09T11:15:37.492871",
+  "data_sources": [
+    "yfinance",
+    "wikipedia"
+  ],
+  "avg_market_cap": 268311.71629055997,
+  "total_market_cap": 13415585.814528
+}

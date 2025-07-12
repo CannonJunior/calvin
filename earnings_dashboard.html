@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Earnings Analysis Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script type="module" src="./dist/dashboard-integration.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Top scrolling ticker */
+        .ticker-container {
+            background: linear-gradient(90deg, #1a1a2e, #16213e, #0f3460);
+            height: 50px;
+            overflow: hidden;
+            border-bottom: 1px solid #333;
+            position: relative;
+        }
+
+        .ticker-content {
+            display: flex;
+            animation: scroll 30s linear infinite;
+            white-space: nowrap;
+            align-items: center;
+            height: 100%;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .ticker-item {
+            margin-right: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64ffda;
+        }
+
+        .ticker-menu {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #333;
+            border-radius: 4px;
+        }
+
+        .ticker-menu select {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        /* Main layout */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            height: calc(100vh - 50px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #1a1a1a;
+            border-right: 1px solid #333;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .favorites-list {
+            margin-bottom: 30px;
+        }
+
+        .list-item {
+            background: #2a2a2a;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover {
+            background: #3a3a3a;
+            transform: translateX(5px);
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .list-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .list-type {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #4a90e2;
+            color: white;
+        }
+
+        .list-type.sandbox {
+            background: #ff6b6b;
+        }
+
+        .stock-count {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Main content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* MCP Tools section */
+        .mcp-tools {
+            background: linear-gradient(90deg, #2d1b69, #11998e);
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .mcp-tool {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .mcp-tool:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Timeline container */
+        .timeline-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 35%, #0f3460 100%);
+        }
+
+        .timeline-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .current-date-line {
+            stroke: #ff3333;
+            stroke-width: 2;
+            opacity: 0.8;
+        }
+
+        .earnings-icon {
+            cursor: pointer;
+            transition: filter 0.3s ease;
+        }
+
+        .earnings-icon:hover {
+            filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.8));
+        }
+
+        .past-icon {
+            fill-opacity: 0.8;
+        }
+
+        .future-icon {
+            fill-opacity: 0.6;
+            stroke: #64ffda;
+            stroke-width: 1;
+        }
+
+        /* Color coding for prediction accuracy */
+        .poor-prediction { fill: #ff4444; }
+        .moderate-prediction { fill: #888888; }
+        .great-prediction { fill: #4444ff; }
+
+        /* Future prediction confidence */
+        .low-confidence { fill: #ff6b6b; }
+        .medium-confidence { fill: #ffd93d; }
+        .high-confidence { fill: #6bcf7f; }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            border: 1px solid #64ffda;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Pinned info container */
+        .pinned-info {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            z-index: 1001;
+            border: 2px solid #64ffda;
+            cursor: move;
+            min-width: 300px;
+            backdrop-filter: blur(15px);
+        }
+
+        .pinned-info .close-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Chat interface */
+        .chat-container {
+            background: #1a1a1a;
+            border-top: 1px solid #333;
+            padding: 20px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .model-selector {
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .config-btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .getting-started {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .quick-action {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #64ffda;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action:hover {
+            background: #3a3a3a;
+            border-color: #64ffda;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .chat-input {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: none;
+            height: 60px;
+            flex: 1;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #64ffda;
+        }
+
+        .chat-send-btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            height: 60px;
+            min-width: 80px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-send-btn:enabled:hover {
+            background: #5ba0f2;
+            transform: translateY(-1px);
+        }
+
+        .chat-send-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .chat-send-btn:disabled:hover {
+            transform: none;
+        }
+
+        /* Configuration modal */
+        .config-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .config-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: white;
+        }
+
+        .config-section {
+            margin-bottom: 25px;
+        }
+
+        .config-section h4 {
+            color: #64ffda;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .config-group {
+            margin-bottom: 15px;
+        }
+
+        .config-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .config-group input,
+        .config-group select {
+            width: 100%;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .config-group input[type="range"] {
+            height: 6px;
+        }
+
+        .config-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .config-buttons button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-cancel {
+            background: #666;
+            color: white;
+        }
+
+        .btn-save {
+            background: #4a90e2;
+            color: white;
+        }
+
+        /* Chat history styles */
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+            border: 1px solid #333;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            min-height: 150px;
+            scrollbar-width: thin;
+            scrollbar-color: #555 transparent;
+        }
+
+        .chat-history::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-history::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 3px;
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-message:last-child {
+            margin-bottom: 0;
+        }
+
+        .chat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .chat-icon.user {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .chat-icon.assistant {
+            background: linear-gradient(135deg, #6bcf7f, #4caf50);
+            color: white;
+        }
+
+        .chat-icon.error {
+            background: linear-gradient(135deg, #ff6b6b, #e74c3c);
+            color: white;
+        }
+
+        .chat-message-content {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .chat-message.user .chat-message-content {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            margin-left: 0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message.assistant .chat-message-content {
+            background: linear-gradient(135deg, #3a3a3a, #2d2d2d);
+            color: #e8e8e8;
+            border: 1px solid #444;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message.error .chat-message-content {
+            background: linear-gradient(135deg, #ff6b6b, #e74c3c);
+            color: white;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message-header {
+            font-weight: 600;
+            font-size: 12px;
+            margin-bottom: 6px;
+            opacity: 0.9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            font-weight: normal;
+        }
+
+        .chat-message-text {
+            line-height: 1.6;
+        }
+
+        /* Financial data highlighting in chat */
+        .chat-message-text .stock-symbol {
+            background: rgba(100, 255, 218, 0.2);
+            color: #64ffda;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .chat-message-text .price {
+            color: #6bcf7f;
+            font-weight: 600;
+        }
+
+        .chat-message-text .percentage {
+            font-weight: 600;
+        }
+
+        .chat-message-text .percentage.positive {
+            color: #6bcf7f;
+        }
+
+        .chat-message-text .percentage.negative {
+            color: #ff6b6b;
+        }
+
+        /* Loading message animation */
+        .chat-message.loading .chat-message-content {
+            background: linear-gradient(135deg, #3a3a3a, #2d2d2d);
+            border: 1px solid #444;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #64ffda;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Loading animation */
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .sidebar {
+                height: auto;
+                max-height: 200px;
+            }
+
+            .chat-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .chat-header-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .getting-started {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .quick-action {
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top scrolling ticker -->
+    <div class="ticker-container">
+        <div class="ticker-content" id="ticker">
+            <span class="ticker-item">AAPL +2.3%</span>
+            <span class="ticker-item">MSFT +1.8%</span>
+            <span class="ticker-item">GOOGL -0.5%</span>
+            <span class="ticker-item">TSLA +3.2%</span>
+            <span class="ticker-item">AMZN +0.9%</span>
+            <span class="ticker-item">META +2.1%</span>
+            <span class="ticker-item">NVDA +4.5%</span>
+            <span class="ticker-item">JPM +1.2%</span>
+            <span class="ticker-item">JNJ -0.3%</span>
+            <span class="ticker-item">V +1.7%</span>
+        </div>
+        <div class="ticker-menu">
+            <select id="ticker-type">
+                <option value="sector">By Sector</option>
+                <option value="earnings">Upcoming Earnings</option>
+                <option value="volume">By Volume</option>
+                <option value="news">Trending News</option>
+                <option value="social">Social Feed</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Portfolio Manager</h3>
+            <div class="favorites-list">
+                <div class="list-item">
+                    <div class="list-header">
+                        <span class="list-name">Tech Growth</span>
+                        <span class="list-type">Real</span>
+                    </div>
+                    <div class="stock-count">12 positions</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-header">
+                        <span class="list-name">Dividend Strategy</span>
+                        <span class="list-type">Real</span>
+                    </div>
+                    <div class="stock-count">8 positions</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-header">
+                        <span class="list-name">AI Experiment</span>
+                        <span class="list-type sandbox">Sandbox</span>
+                    </div>
+                    <div class="stock-count">15 positions</div>
+                </div>
+            </div>
+
+            <h3>Configuration</h3>
+            <div class="config-group">
+                <label>Icon Size</label>
+                <select id="icon-size">
+                    <option value="equal">Equal Size</option>
+                    <option value="market-cap">By Market Cap</option>
+                    <option value="volume">By Volume</option>
+                    <option value="short-interest">By Short Interest</option>
+                    <option value="pe-ratio">By P/E Ratio</option>
+                    <option value="90day-performance">90-Day Performance</option>
+                </select>
+            </div>
+            <div class="config-group">
+                <label>Color Scheme</label>
+                <select id="color-scheme">
+                    <option value="default">Default (Red/Gray/Blue)</option>
+                    <option value="traffic">Traffic Light</option>
+                    <option value="heatmap">Heatmap</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- MCP Tools -->
+            <div class="mcp-tools">
+                <div class="mcp-tool" onclick="performSentimentAnalysis()">📊 Sentiment Analysis</div>
+                <div class="mcp-tool" onclick="findSimilarCompanies()">🔍 Find Similar Companies</div>
+                <div class="mcp-tool" onclick="addIPOCompanies()">📈 Add IPO Companies</div>
+                <div class="mcp-tool" onclick="analyzeOptions()">📋 Options Analysis</div>
+                <div class="mcp-tool" onclick="marketCorrelation()">🔗 Market Correlation</div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline-container">
+                <svg class="timeline-svg" id="timeline"></svg>
+            </div>
+
+            <!-- Chat interface -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <select class="model-selector" id="model-select">
+                            <option value="llama3.1">Llama 3.1 8B</option>
+                            <option value="mistral">Mistral 7B</option>
+                            <option value="codellama">CodeLlama 13B</option>
+                            <option value="phi3">Phi-3 Mini</option>
+                            <option value="gemma2">Gemma 2 9B</option>
+                        </select>
+                        <button class="config-btn" onclick="openConfigModal()">⚙️ Configure Model</button>
+                    </div>
+                    
+                    <div class="getting-started">
+                        <div class="quick-action" onclick="populateChatInput('Analyze AAPL earnings performance')">📊 Analyze AAPL earnings</div>
+                        <div class="quick-action" onclick="populateChatInput('What sectors are showing strength?')">🏭 Sector analysis</div>
+                        <div class="quick-action" onclick="populateChatInput('Upcoming earnings this week')">📅 This week's earnings</div>
+                        <div class="quick-action" onclick="populateChatInput('Compare my portfolio to S&P 500')">📈 Portfolio comparison</div>
+                    </div>
+                </div>
+                
+                <!-- Chat History -->
+                <div class="chat-history" id="chat-history">
+                    <!-- Welcome message -->
+                    <div class="chat-message assistant">
+                        <div class="chat-icon assistant">🤖</div>
+                        <div class="chat-message-content">
+                            <div class="chat-message-header">
+                                Assistant
+                                <span class="chat-message-time">Welcome</span>
+                            </div>
+                            <div class="chat-message-text">
+                                Hello! I'm your financial analysis assistant. I can help you analyze stocks, earnings, and market trends. 
+                                Ask me anything about the companies shown on the timeline above, or use the quick actions above to get started.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <textarea class="chat-input" placeholder="Ask questions about stocks, earnings, or request analysis..." id="chat-input"></textarea>
+                    <button class="chat-send-btn" id="chat-send-btn" disabled>
+                        <span>Send</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip" style="display: none;"></div>
+
+    <!-- Configuration Modal -->
+    <div class="config-modal" id="config-modal">
+        <div class="config-content">
+            <h3 style="color: #64ffda; margin-bottom: 20px;">Ollama Model Configuration</h3>
+            
+            <div class="config-section">
+                <h4>Model Parameters</h4>
+                <div class="config-group">
+                    <label>Temperature (0.0 - 2.0)</label>
+                    <input type="range" min="0" max="2" step="0.1" value="0.7" id="temperature">
+                    <span id="temp-value">0.7</span>
+                </div>
+                <div class="config-group">
+                    <label>Top P (0.0 - 1.0)</label>
+                    <input type="range" min="0" max="1" step="0.05" value="0.9" id="top-p">
+                    <span id="top-p-value">0.9</span>
+                </div>
+                <div class="config-group">
+                    <label>Max Tokens</label>
+                    <input type="number" min="1" max="4096" value="2048" id="max-tokens">
+                </div>
+                <div class="config-group">
+                    <label>Context Length</label>
+                    <input type="number" min="512" max="32768" value="4096" id="context-length">
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h4>Generation Settings</h4>
+                <div class="config-group">
+                    <label>Repetition Penalty</label>
+                    <input type="range" min="0.5" max="2.0" step="0.1" value="1.1" id="rep-penalty">
+                    <span id="rep-penalty-value">1.1</span>
+                </div>
+                <div class="config-group">
+                    <label>Top K</label>
+                    <input type="number" min="1" max="100" value="40" id="top-k">
+                </div>
+                <div class="config-group">
+                    <label>Seed (for reproducibility)</label>
+                    <input type="number" value="-1" id="seed">
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h4>System Prompt</h4>
+                <div class="config-group">
+                    <label>Custom System Prompt</label>
+                    <textarea style="height: 100px;" id="system-prompt" placeholder="You are a financial analyst assistant...">You are an expert financial analyst with deep knowledge of stock markets, earnings analysis, and investment strategies. Provide accurate, actionable insights while maintaining a professional tone.</textarea>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h4>Performance Settings</h4>
+                <div class="config-group">
+                    <label>GPU Layers</label>
+                    <input type="number" min="0" max="50" value="-1" id="gpu-layers">
+                </div>
+                <div class="config-group">
+                    <label>Thread Count</label>
+                    <input type="number" min="1" max="16" value="4" id="threads">
+                </div>
+                <div class="config-group">
+                    <label>Batch Size</label>
+                    <input type="number" min="1" max="512" value="128" id="batch-size">
+                </div>
+            </div>
+
+            <div class="config-buttons">
+                <button class="btn-cancel" onclick="closeConfigModal()">Cancel</button>
+                <button class="btn-save" onclick="saveConfig()">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample S&P 500 data (abbreviated for demo)
+        const sp500Companies = [
+            'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'JPM', 'JNJ', 'V',
+            'PG', 'UNH', 'HD', 'MA', 'PFE', 'BAC', 'XOM', 'DIS', 'ADBE', 'CRM',
+            'NFLX', 'KO', 'VZ', 'INTC', 'CSCO', 'ABT', 'PEP', 'TMO', 'AVGO', 'ACN'
+        ];
+
+        // Generate sample earnings data
+        function generateSampleData() {
+            const data = [];
+            const now = new Date();
+            
+            sp500Companies.forEach((symbol, index) => {
+                // Past earnings (last 4 quarters)
+                for (let q = 0; q < 4; q++) {
+                    const date = new Date(now);
+                    date.setMonth(date.getMonth() - (q * 3) - Math.random() * 30);
+                    
+                    data.push({
+                        symbol,
+                        date,
+                        type: 'past',
+                        priceChange: (Math.random() - 0.5) * 20,
+                        predictionAccuracy: Math.random(),
+                        marketCap: Math.random() * 2000 + 100,
+                        volume: Math.random() * 100000000 + 1000000,
+                        sector: ['Technology', 'Healthcare', 'Financial', 'Consumer', 'Energy'][Math.floor(Math.random() * 5)],
+                        actualEPS: (Math.random() * 5 + 0.5).toFixed(2),
+                        expectedEPS: (Math.random() * 5 + 0.5).toFixed(2)
+                    });
+                }
+                
+                // Future earnings (next 4 quarters)
+                for (let q = 0; q < 4; q++) {
+                    const date = new Date(now);
+                    date.setMonth(date.getMonth() + (q * 3) + Math.random() * 30);
+                    
+                    data.push({
+                        symbol,
+                        date,
+                        type: 'future',
+                        analystExpectation: Math.random() > 0.5 ? 'beat' : Math.random() > 0.5 ? 'meet' : 'miss',
+                        confidence: Math.random(),
+                        marketCap: Math.random() * 2000 + 100,
+                        volume: Math.random() * 100000000 + 1000000,
+                        sector: ['Technology', 'Healthcare', 'Financial', 'Consumer', 'Energy'][Math.floor(Math.random() * 5)],
+                        expectedEPS: (Math.random() * 5 + 0.5).toFixed(2),
+                        consensusRating: ['Buy', 'Hold', 'Sell'][Math.floor(Math.random() * 3)]
+                    });
+                }
+            });
+            
+            return data.sort((a, b) => a.date - b.date);
+        }
+
+        // Initialize timeline
+        function initializeTimeline() {
+            const svg = d3.select('#timeline');
+            const container = document.querySelector('.timeline-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            svg.attr('width', width).attr('height', height);
+            
+            const data = generateSampleData();
+            const now = new Date();
+            
+            // Scales
+            const xScale = d3.scaleTime()
+                .domain(d3.extent(data, d => d.date))
+                .range([50, width - 50]);
+            
+            const yScale = d3.scaleLinear()
+                .domain([-15, 15])
+                .range([height - 100, 100]);
+            
+            // Current date line
+            svg.append('line')
+                .attr('class', 'current-date-line')
+                .attr('x1', xScale(now))
+                .attr('x2', xScale(now))
+                .attr('y1', 50)
+                .attr('y2', height - 50);
+            
+            // Earnings icons
+            const icons = svg.selectAll('.earnings-icon')
+                .data(data)
+                .enter()
+                .append('circle')
+                .attr('class', d => `earnings-icon ${d.type}-icon`)
+                .attr('cx', d => xScale(d.date))
+                .attr('cy', d => {
+                    if (d.type === 'past') {
+                        return yScale(d.priceChange);
+                    } else {
+                        const expectationMap = { 'beat': 5, 'meet': 0, 'miss': -5 };
+                        return yScale(expectationMap[d.analystExpectation]);
+                    }
+                })
+                .attr('r', d => {
+                    const sizeMode = document.getElementById('icon-size').value;
+                    switch(sizeMode) {
+                        case 'market-cap': return Math.sqrt(d.marketCap) / 10;
+                        case 'volume': return Math.sqrt(d.volume) / 1000;
+                        default: return 6;
+                    }
+                })
+                .attr('fill', d => {
+                    if (d.type === 'past') {
+                        if (d.predictionAccuracy > 0.7) return '#4444ff';
+                        if (d.predictionAccuracy > 0.4) return '#888888';
+                        return '#ff4444';
+                    } else {
+                        if (d.confidence > 0.7) return '#6bcf7f';
+                        if (d.confidence > 0.4) return '#ffd93d';
+                        return '#ff6b6b';
+                    }
+                })
+                .on('mouseover', showTooltip)
+                .on('mouseout', hideTooltip)
+                .on('click', pinInfo);
+            
+            // Add axis
+            const xAxis = d3.axisBottom(xScale);
+            svg.append('g')
+                .attr('transform', `translate(0, ${height - 80})`)
+                .call(xAxis)
+                .attr('color', '#666');
+            
+            const yAxis = d3.axisLeft(yScale);
+            svg.append('g')
+                .attr('transform', 'translate(40, 0)')
+                .call(yAxis)
+                .attr('color', '#666');
+        }
+        
+        function showTooltip(event, d) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.display = 'block';
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY - 10 + 'px';
+            
+            let content = `
+                <strong>${d.symbol}</strong><br>
+                Date: ${d.date.toLocaleDateString()}<br>
+                Sector: ${d.sector}<br>
+                Market Cap: $${(d.marketCap).toFixed(1)}B<br>
+            `;
+            
+            if (d.type === 'past') {
+                content += `
+                    Price Change: ${d.priceChange > 0 ? '+' : ''}${d.priceChange.toFixed(2)}%<br>
+                    Prediction Accuracy: ${(d.predictionAccuracy * 100).toFixed(1)}%<br>
+                    Actual EPS: ${d.actualEPS}<br>
+                    Expected EPS: ${d.expectedEPS}
+                `;
+            } else {
+                content += `
+                    Analyst Expectation: ${d.analystExpectation.toUpperCase()}<br>
+                    Our Confidence: ${(d.confidence * 100).toFixed(1)}%<br>
+                    Expected EPS: ${d.expectedEPS}<br>
+                    Consensus: ${d.consensusRating}
+                `;
+            }
+            
+            tooltip.innerHTML = content;
+        }
+        
+        function hideTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
+        }
+        
+        function pinInfo(event, d) {
+            const pinned = document.createElement('div');
+            pinned.className = 'pinned-info';
+            pinned.style.left = event.pageX + 'px';
+            pinned.style.top = event.pageY + 'px';
+            
+            let content = `
+                <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+                <h4>${d.symbol} - ${d.date.toLocaleDateString()}</h4>
+                <p><strong>Sector:</strong> ${d.sector}</p>
+                <p><strong>Market Cap:</strong> ${d.marketCap.toFixed(1)}B</p>
+                <p><strong>Volume:</strong> ${(d.volume / 1000000).toFixed(1)}M</p>
+            `;
+            
+            if (d.type === 'past') {
+                content += `
+                    <p><strong>Price Change:</strong> ${d.priceChange > 0 ? '+' : ''}${d.priceChange.toFixed(2)}%</p>
+                    <p><strong>Prediction Accuracy:</strong> ${(d.predictionAccuracy * 100).toFixed(1)}%</p>
+                    <p><strong>Actual EPS:</strong> ${d.actualEPS}</p>
+                    <p><strong>Expected EPS:</strong> ${d.expectedEPS}</p>
+                    <p><strong>Beat/Miss:</strong> ${parseFloat(d.actualEPS) > parseFloat(d.expectedEPS) ? 'BEAT' : 'MISS'}</p>
+                `;
+            } else {
+                content += `
+                    <p><strong>Expectation:</strong> ${d.analystExpectation.toUpperCase()}</p>
+                    <p><strong>Our Confidence:</strong> ${(d.confidence * 100).toFixed(1)}%</p>
+                    <p><strong>Expected EPS:</strong> ${d.expectedEPS}</p>
+                    <p><strong>Consensus Rating:</strong> ${d.consensusRating}</p>
+                    <p><strong>Days Until:</strong> ${Math.ceil((d.date - new Date()) / (1000 * 60 * 60 * 24))}</p>
+                `;
+            }
+            
+            pinned.innerHTML = content;
+            document.body.appendChild(pinned);
+            
+            // Make draggable
+            makeDraggable(pinned);
+        }
+        
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            element.onmousedown = dragMouseDown;
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        // MCP Tool Functions
+        function performSentimentAnalysis() {
+            alert('Sentiment Analysis MCP Server would analyze current market sentiment across news, social media, and analyst reports for visible companies.');
+        }
+        
+        function findSimilarCompanies() {
+            alert('Similar Companies MCP Server would identify companies with similar business models, financials, or market behavior patterns.');
+        }
+        
+        function addIPOCompanies() {
+            alert('IPO Tracker MCP Server would add recent and upcoming IPOs to the timeline with their earnings schedules.');
+        }
+        
+        function analyzeOptions() {
+            alert('Options Analysis MCP Server would provide options flow data and unusual activity around earnings dates.');
+        }
+        
+        function marketCorrelation() {
+            alert('Market Correlation MCP Server would show how earnings surprises correlate with broader market movements.');
+        }
+
+        // Chat functions - now handled by dashboard-integration.js
+        function askQuestion(question) {
+            // This function is maintained for compatibility but functionality moved to TypeScript module
+            console.log('Question:', question);
+        }
+
+        // Function to populate chat input (fallback for quick actions)
+        function populateChatInput(question) {
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.value = question;
+                chatInput.focus();
+                updateSendButtonState();
+            }
+        }
+
+        // Function to update send button state based on input content
+        function updateSendButtonState() {
+            const chatInput = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('chat-send-btn');
+            
+            if (chatInput && sendBtn) {
+                const hasText = chatInput.value.trim().length > 0;
+                sendBtn.disabled = !hasText;
+            }
+        }
+
+        // Function to add message to chat history with proper formatting
+        function addChatMessage(message, type, timestamp = new Date()) {
+            const chatHistory = document.getElementById('chat-history');
+            if (!chatHistory) return;
+
+            const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            // Format message content with financial data highlighting
+            const formattedMessage = formatFinancialMessage(message);
+            
+            // Create message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}`;
+            
+            let icon, label;
+            switch (type) {
+                case 'user':
+                    icon = '👤';
+                    label = 'You';
+                    break;
+                case 'assistant':
+                    icon = '🤖';
+                    label = 'Assistant';
+                    break;
+                case 'error':
+                    icon = '⚠️';
+                    label = 'Error';
+                    break;
+                default:
+                    icon = '💬';
+                    label = 'System';
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="chat-icon ${type}">${icon}</div>
+                <div class="chat-message-content">
+                    <div class="chat-message-header">
+                        ${label}
+                        <span class="chat-message-time">${timeStr}</span>
+                    </div>
+                    <div class="chat-message-text">${formattedMessage}</div>
+                </div>
+            `;
+            
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        // Function to add loading message
+        function addLoadingMessage() {
+            const chatHistory = document.getElementById('chat-history');
+            if (!chatHistory) return null;
+
+            const loadingId = `loading-${Date.now()}`;
+            const messageDiv = document.createElement('div');
+            messageDiv.id = loadingId;
+            messageDiv.className = 'chat-message loading assistant';
+            
+            messageDiv.innerHTML = `
+                <div class="chat-icon assistant">🤖</div>
+                <div class="chat-message-content">
+                    <div class="chat-message-header">
+                        Assistant
+                        <span class="chat-message-time">typing...</span>
+                    </div>
+                    <div class="chat-message-text">
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            return loadingId;
+        }
+
+        // Function to remove loading message
+        function removeLoadingMessage(loadingId) {
+            if (loadingId) {
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+            }
+        }
+
+        // Function to format financial messages with highlighting
+        function formatFinancialMessage(message) {
+            return message
+                // Stock symbols (3-5 capital letters)
+                .replace(/\b[A-Z]{2,5}\b/g, (match) => {
+                    if (!['THE', 'AND', 'FOR', 'ARE', 'BUT', 'NOT', 'YOU', 'ALL', 'CAN', 'HER', 'WAS', 'ONE', 'OUR', 'HAD', 'OUT', 'DAY', 'GET', 'HAS', 'HIM', 'HOW', 'MAN', 'NEW', 'NOW', 'OLD', 'SEE', 'TWO', 'WAY', 'WHO', 'BOY', 'DID', 'ITS', 'LET', 'PUT', 'SAY', 'SHE', 'TOO', 'USE'].includes(match)) {
+                        return `<span class="stock-symbol">${match}</span>`;
+                    }
+                    return match;
+                })
+                // Prices ($X.XX format)
+                .replace(/\$[\d,]+\.?\d*/g, '<span class="price">$&</span>')
+                // Percentages with color coding
+                .replace(/([+-]?\d+\.?\d*%)/g, (match) => {
+                    const isPositive = match.startsWith('+') || (!match.startsWith('-') && parseFloat(match) > 0);
+                    const className = isPositive ? 'percentage positive' : 'percentage negative';
+                    return `<span class="${className}">${match}</span>`;
+                })
+                // Bold text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                // Italic text
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                // Line breaks
+                .replace(/\n/g, '<br>');
+        }
+
+        // Function to send chat message
+        async function sendChatMessage() {
+            const chatInput = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('chat-send-btn');
+            
+            if (!chatInput || !sendBtn) return;
+            
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to history
+            addChatMessage(message, 'user');
+            
+            // Clear input and disable button
+            chatInput.value = '';
+            updateSendButtonState();
+            
+            // Show loading indicator
+            const loadingId = addLoadingMessage();
+            
+            // Disable send button during processing
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span>Sending...</span>';
+            
+            try {
+                // Check if TypeScript integration is available
+                if (window.dashboardIntegration) {
+                    // Use the TypeScript integration
+                    console.log('Using TypeScript integration for:', message);
+                    // The TypeScript module should handle adding the response
+                    removeLoadingMessage(loadingId);
+                } else {
+                    // Fallback to direct Ollama call
+                    console.log('Fallback: Sending to Ollama:', message);
+                    
+                    const response = await fetch('http://localhost:11434/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            model: document.getElementById('model-select')?.value || 'llama3.1',
+                            messages: [
+                                {
+                                    role: 'system',
+                                    content: 'You are an expert financial analyst assistant with deep knowledge of stock markets, earnings analysis, and investment strategies. Provide accurate, actionable insights while maintaining a professional tone.'
+                                },
+                                {
+                                    role: 'user',
+                                    content: message
+                                }
+                            ],
+                            stream: false
+                        })
+                    });
+                    
+                    removeLoadingMessage(loadingId);
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('Ollama response:', result);
+                        
+                        // Extract message content from chat API response
+                        const responseText = result.message?.content || result.response || 'No response received';
+                        
+                        // Add assistant response to history
+                        addChatMessage(responseText, 'assistant');
+                    } else {
+                        console.error('Ollama API error:', response.status, response.statusText);
+                        let errorMessage = `Failed to get response from Ollama (Error ${response.status}).`;
+                        
+                        if (response.status === 404) {
+                            errorMessage += ' Please check:\n• Ollama is running: `ollama serve`\n• Model is installed: `ollama pull llama3.1`\n• API is accessible at localhost:11434';
+                        } else if (response.status === 500) {
+                            errorMessage += ' Internal server error. Try restarting Ollama.';
+                        }
+                        
+                        addChatMessage(errorMessage, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                removeLoadingMessage(loadingId);
+                addChatMessage(`Could not send message: ${error.message}`, 'error');
+            } finally {
+                // Restore button state
+                sendBtn.innerHTML = '<span>Send</span>';
+                updateSendButtonState();
+            }
+        }
+
+        // Configuration modal
+        function openConfigModal() {
+            document.getElementById('config-modal').style.display = 'flex';
+        }
+        
+        function closeConfigModal() {
+            document.getElementById('config-modal').style.display = 'none';
+        }
+        
+        function saveConfig() {
+            // Collect configuration values
+            const config = {
+                temperature: parseFloat(document.getElementById('temperature').value),
+                topP: parseFloat(document.getElementById('top-p').value),
+                maxTokens: parseInt(document.getElementById('max-tokens').value),
+                contextLength: parseInt(document.getElementById('context-length').value),
+                repetitionPenalty: parseFloat(document.getElementById('rep-penalty').value),
+                topK: parseInt(document.getElementById('top-k').value),
+                seed: parseInt(document.getElementById('seed').value),
+                systemPrompt: document.getElementById('system-prompt').value,
+                gpuLayers: parseInt(document.getElementById('gpu-layers').value),
+                threads: parseInt(document.getElementById('threads').value),
+                batchSize: parseInt(document.getElementById('batch-size').value)
+            };
+            
+            console.log('Ollama Configuration:', config);
+            // Here you would send this to your Ollama API
+            
+            closeConfigModal();
+            alert('Configuration saved! This would be sent to your Ollama server.');
+        }
+
+        // Update slider values
+        document.getElementById('temperature').addEventListener('input', function() {
+            document.getElementById('temp-value').textContent = this.value;
+        });
+        
+        document.getElementById('top-p').addEventListener('input', function() {
+            document.getElementById('top-p-value').textContent = this.value;
+        });
+        
+        document.getElementById('rep-penalty').addEventListener('input', function() {
+            document.getElementById('rep-penalty-value').textContent = this.value;
+        });
+
+        // Ticker functionality
+        function updateTicker() {
+            const type = document.getElementById('ticker-type').value;
+            const ticker = document.getElementById('ticker');
+            
+            let content = '';
+            switch(type) {
+                case 'sector':
+                    content = '<span class="ticker-item">Technology +1.8%</span><span class="ticker-item">Healthcare +0.9%</span><span class="ticker-item">Financial +2.1%</span><span class="ticker-item">Energy -1.2%</span><span class="ticker-item">Consumer +0.7%</span>';
+                    break;
+                case 'earnings':
+                    content = '<span class="ticker-item">AAPL: Jul 15</span><span class="ticker-item">MSFT: Jul 16</span><span class="ticker-item">GOOGL: Jul 17</span><span class="ticker-item">TSLA: Jul 18</span><span class="ticker-item">AMZN: Jul 19</span>';
+                    break;
+                case 'volume':
+                    content = '<span class="ticker-item">NVDA 45.2M vol</span><span class="ticker-item">AAPL 38.1M vol</span><span class="ticker-item">TSLA 31.7M vol</span><span class="ticker-item">AMD 28.3M vol</span>';
+                    break;
+                case 'news':
+                    content = '<span class="ticker-item">📈 AI stocks surge on chip demand</span><span class="ticker-item">📊 Q2 earnings beat expectations</span><span class="ticker-item">🏦 Fed signals rate stability</span>';
+                    break;
+                case 'social':
+                    content = '<span class="ticker-item">🔥 #NVDA trending</span><span class="ticker-item">📱 #AAPL iPhone buzz</span><span class="ticker-item">🚗 #TSLA autonomous driving</span>';
+                    break;
+            }
+            ticker.innerHTML = content;
+        }
+        
+        document.getElementById('ticker-type').addEventListener('change', updateTicker);
+
+        // Icon size change handler
+        document.getElementById('icon-size').addEventListener('change', function() {
+            // Redraw timeline with new sizing
+            d3.select('#timeline').selectAll('*').remove();
+            initializeTimeline();
+        });
+
+        // Color scheme change handler
+        document.getElementById('color-scheme').addEventListener('change', function() {
+            const scheme = this.value;
+            // Update CSS variables or redraw with new colors
+            console.log('Color scheme changed to:', scheme);
+        });
+
+        // Portfolio management
+        function addToPortfolio(symbol, listName) {
+            console.log(`Adding ${symbol} to ${listName} portfolio`);
+            // Here you would integrate with portfolio management system
+        }
+
+        // Responsive handling
+        function handleResize() {
+            d3.select('#timeline').selectAll('*').remove();
+            initializeTimeline();
+        }
+        
+        window.addEventListener('resize', debounce(handleResize, 250));
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Timeline zoom and pan functionality
+        function addZoomPan() {
+            const svg = d3.select('#timeline');
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 10])
+                .on('zoom', function(event) {
+                    const { transform } = event;
+                    svg.selectAll('.earnings-icon')
+                        .attr('transform', transform);
+                    svg.selectAll('.axis')
+                        .attr('transform', transform);
+                });
+            
+            svg.call(zoom);
+        }
+
+        // Data loading simulation
+        function loadSP500Data() {
+            // In a real implementation, this would fetch from:
+            // 1. Wikipedia for S&P 500 company list
+            // 2. Financial APIs for earnings dates
+            // 3. Your prediction models for confidence scores
+            console.log('Loading S&P 500 data...');
+            return sp500Companies;
+        }
+
+        // MCP Server integration points
+        const mcpServers = {
+            sentimentAnalysis: {
+                endpoint: 'http://localhost:3001/sentiment',
+                description: 'Analyzes sentiment from news and social media'
+            },
+            similarCompanies: {
+                endpoint: 'http://localhost:3002/similar',
+                description: 'Finds companies with similar characteristics'
+            },
+            ipoTracker: {
+                endpoint: 'http://localhost:3003/ipo',
+                description: 'Tracks IPO companies and their earnings schedules'
+            },
+            optionsAnalysis: {
+                endpoint: 'http://localhost:3004/options',
+                description: 'Provides options flow and unusual activity data'
+            },
+            marketCorrelation: {
+                endpoint: 'http://localhost:3005/correlation',
+                description: 'Analyzes market correlations and dependencies'
+            }
+        };
+
+        // Ollama integration - now handled by dashboard-integration.js
+        // Legacy functions maintained for compatibility
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTimeline();
+            loadSP500Data();
+            updateTicker();
+            
+            // Add zoom and pan after initialization
+            setTimeout(addZoomPan, 100);
+            
+            // Setup chat input and send button event listeners
+            const chatInput = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('chat-send-btn');
+            
+            if (chatInput) {
+                // Update button state on input
+                chatInput.addEventListener('input', updateSendButtonState);
+                chatInput.addEventListener('keyup', updateSendButtonState);
+                
+                // Handle Enter key (existing functionality)
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        if (!sendBtn.disabled) {
+                            sendChatMessage();
+                        }
+                    }
+                });
+            }
+            
+            if (sendBtn) {
+                // Handle button click
+                sendBtn.addEventListener('click', sendChatMessage);
+            }
+            
+            // Initial button state
+            updateSendButtonState();
+            
+            console.log('Stock Market Earnings Analysis Dashboard initialized');
+            console.log('MCP Servers configured:', Object.keys(mcpServers));
+            console.log('Ready for Ollama integration on localhost:11434');
+        });
+
+        // Additional utility functions for future development
+        function exportPortfolio(listName) {
+            console.log(`Exporting ${listName} portfolio data`);
+            // Export portfolio data as CSV/JSON
+        }
+        
+        function importPortfolio(file) {
+            console.log('Importing portfolio from file:', file.name);
+            // Import portfolio data from file
+        }
+        
+        function scheduleAlert(symbol, date, type) {
+            console.log(`Scheduling ${type} alert for ${symbol} on ${date}`);
+            // Schedule earnings alert
+        }
+        
+        function generateReport(portfolioName, timeframe) {
+            console.log(`Generating ${timeframe} report for ${portfolioName}`);
+            // Generate performance report
+        }
+
+        // WebSocket connection for real-time updates (future enhancement)
+        function initializeWebSocket() {
+            // Connect to real-time data feed
+            // const ws = new WebSocket('ws://localhost:8080/realtime');
+            console.log('WebSocket for real-time updates would be initialized here');
+        }
+
+        // Service Worker for offline functionality (future enhancement)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('SW registered'))
+                .catch(error => console.log('SW registration failed'));
+        }
+    </script>
+</body>
+</html>

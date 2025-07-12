@@ -1,49 +1,22 @@
 {
-  "name": "calvin-stock-prediction-tool",
+  "name": "calvin-earnings-dashboard",
   "version": "1.0.0",
-  "description": "AI-powered stock prediction tool with earnings analysis",
-  "main": "main_client.py",
-  "bin": {
-    "calvin": "./start.sh"
-  },
+  "description": "Stock Market Earnings Analysis Dashboard with MCP integration",
+  "main": "earnings_dashboard.html",
   "scripts": {
-    "start": "python main_client.py",
-    "dev": "python main_client.py",
-    "install-deps": "pip install -r requirements.txt",
-    "setup": "npm run install-deps && python -c 'import nltk; nltk.download(\"punkt\"); nltk.download(\"brown\")'",
-    "test": "python -m pytest tests/",
-    "build": "echo 'Building Calvin Stock Prediction Tool...'",
-    "clean": "find . -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true"
+    "dev": "npx http-server -p 8080",
+    "build": "npm run compile",
+    "compile": "tsc",
+    "start": "npm run dev"
   },
-  "keywords": [
-    "stock",
-    "prediction",
-    "earnings",
-    "analysis",
-    "ai",
-    "mcp",
-    "ollama",
-    "finance"
-  ],
-  "author": "Calvin Stock Prediction Tool",
-  "license": "MIT",
-  "engines": {
-    "node": ">=16.0.0",
-    "python": ">=3.8"
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ws": "^8.14.2"
   },
-  "dependencies": {},
-  "devDependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "."
+  "devDependencies": {
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.3.0",
+    "http-server": "^14.1.1"
   },
-  "preferGlobal": true,
-  "files": [
-    "main_client.py",
-    "requirements.txt",
-    "start.sh",
-    "packages/",
-    "assets/",
-    "frontend/"
-  ]
+  "type": "module"
 }
