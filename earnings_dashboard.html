@@ -687,16 +687,7 @@
     <!-- Top scrolling ticker -->
     <div class="ticker-container">
         <div class="ticker-content" id="ticker">
-            <span class="ticker-item">AAPL +2.3%</span>
-            <span class="ticker-item">MSFT +1.8%</span>
-            <span class="ticker-item">GOOGL -0.5%</span>
-            <span class="ticker-item">TSLA +3.2%</span>
-            <span class="ticker-item">AMZN +0.9%</span>
-            <span class="ticker-item">META +2.1%</span>
-            <span class="ticker-item">NVDA +4.5%</span>
-            <span class="ticker-item">JPM +1.2%</span>
-            <span class="ticker-item">JNJ -0.3%</span>
-            <span class="ticker-item">V +1.7%</span>
+            <span class="ticker-item">Loading real market data...</span>
         </div>
         <div class="ticker-menu">
             <select id="ticker-type">
@@ -713,27 +704,14 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <h3>Portfolio Manager</h3>
-            <div class="favorites-list">
+            <div class="favorites-list" id="portfolio-list">
+                <!-- Portfolio items will be populated with real sector data -->
                 <div class="list-item">
                     <div class="list-header">
-                        <span class="list-name">Tech Growth</span>
-                        <span class="list-type">Real</span>
+                        <span class="list-name">Loading S&P 500 sectors...</span>
+                        <span class="list-type">API</span>
                     </div>
-                    <div class="stock-count">12 positions</div>
-                </div>
-                <div class="list-item">
-                    <div class="list-header">
-                        <span class="list-name">Dividend Strategy</span>
-                        <span class="list-type">Real</span>
-                    </div>
-                    <div class="stock-count">8 positions</div>
-                </div>
-                <div class="list-item">
-                    <div class="list-header">
-                        <span class="list-name">AI Experiment</span>
-                        <span class="list-type sandbox">Sandbox</span>
-                    </div>
-                    <div class="stock-count">15 positions</div>
+                    <div class="stock-count">Loading...</div>
                 </div>
             </div>
 
@@ -781,11 +759,11 @@
                 <div class="chat-header">
                     <div class="chat-header-left">
                         <select class="model-selector" id="model-select">
-                            <option value="llama3.1">Llama 3.1 8B</option>
-                            <option value="mistral">Mistral 7B</option>
-                            <option value="codellama">CodeLlama 13B</option>
-                            <option value="phi3">Phi-3 Mini</option>
-                            <option value="gemma2">Gemma 2 9B</option>
+                            <option value="qwen:1.8b" selected>Qwen 1.8B</option>
+                            <option value="gemma3:1b">Gemma3 1B</option>
+                            <option value="llama3.1:1b">Llama 3.1 1B</option>
+                            <option value="codellama:7b">CodeLlama 7B</option>
+                            <option value="llama3.1:8b">Llama 3.1 8B</option>
                         </select>
                         <button class="config-btn" onclick="openConfigModal()">⚙️ Configure Model</button>
                     </div>
@@ -802,7 +780,7 @@
                 <div class="chat-history" id="chat-history">
                     <!-- Welcome message -->
                     <div class="chat-message assistant">
-                        <div class="chat-icon assistant">🤖</div>
+                        <div class="chat-icon assistant">🦸</div>
                         <div class="chat-message-content">
                             <div class="chat-message-header">
                                 Assistant
@@ -905,21 +883,220 @@
     </div>
 
     <script>
-        // Sample S&P 500 data (abbreviated for demo)
-        const sp500Companies = [
-            'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'JPM', 'JNJ', 'V',
-            'PG', 'UNH', 'HD', 'MA', 'PFE', 'BAC', 'XOM', 'DIS', 'ADBE', 'CRM',
-            'NFLX', 'KO', 'VZ', 'INTC', 'CSCO', 'ABT', 'PEP', 'TMO', 'AVGO', 'ACN'
-        ];
+        // REAL DATA CONFIGURATION
+        // Data is now served via HTTP API from Wikipedia-sourced S&P 500 list (503 companies)
+        // To use real market data, sign up for free API keys:
+        // 1. Alpha Vantage: https://www.alphavantage.co/support/#api-key (25 requests/day free)
+        // 2. Finnhub: https://finnhub.io/register (60 requests/minute free)
+        // Replace 'demo' with your actual API keys below
+        
+        const API_CONFIG = {
+            ALPHA_VANTAGE_KEY: 'demo', // Replace with your Alpha Vantage API key
+            FINNHUB_KEY: 'demo', // Replace with your Finnhub API key
+            BASE_URL_AV: 'https://www.alphavantage.co/query',
+            BASE_URL_FH: 'https://finnhub.io/api/v1',
+            SP500_API: 'http://localhost:5001/api',  // Local S&P 500 API
+            EARNINGS_API: 'http://localhost:5002/api'  // PostgreSQL Earnings API
+        };
 
-        // Generate sample earnings data
-        function generateSampleData() {
+        // S&P 500 companies data (loaded from API)
+        let sp500Companies = [];
+        let sp500CompaniesData = [];
+        let sp500SectorsData = [];
+
+        // Real data storage
+        let realEarningsData = [];
+        let realTickerData = {};
+
+        // Fetch real market data from Alpha Vantage
+        async function fetchRealMarketData(symbols, maxSymbols = 10) {
+            const data = [];
+            const fetchPromises = [];
+            
+            // Limit API calls to avoid rate limits
+            const symbolsToFetch = symbols.slice(0, maxSymbols);
+            
+            for (const symbol of symbolsToFetch) {
+                const promise = fetchStockData(symbol);
+                fetchPromises.push(promise);
+            }
+            
+            try {
+                const results = await Promise.allSettled(fetchPromises);
+                results.forEach((result, index) => {
+                    if (result.status === 'fulfilled' && result.value) {
+                        data.push(result.value);
+                    } else {
+                        console.warn(`Failed to fetch data for ${symbolsToFetch[index]}`);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching real market data:', error);
+            }
+            
+            return data;
+        }
+
+        // Fetch individual stock data
+        async function fetchStockData(symbol) {
+            try {
+                // Use Alpha Vantage GLOBAL_QUOTE for current price data
+                const url = `${API_CONFIG.BASE_URL_AV}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_CONFIG.ALPHA_VANTAGE_KEY}`;
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const quote = data['Global Quote'];
+                
+                if (!quote || Object.keys(quote).length === 0) {
+                    console.warn(`No data returned for ${symbol}`);
+                    return null;
+                }
+                
+                return {
+                    symbol: quote['01. symbol'],
+                    price: parseFloat(quote['05. price']),
+                    change: parseFloat(quote['09. change']),
+                    changePercent: parseFloat(quote['10. change percent'].replace('%', '')),
+                    volume: parseInt(quote['06. volume']),
+                    previousClose: parseFloat(quote['08. previous close']),
+                    high: parseFloat(quote['03. high']),
+                    low: parseFloat(quote['04. low']),
+                    lastUpdated: quote['07. latest trading day']
+                };
+            } catch (error) {
+                console.error(`Error fetching data for ${symbol}:`, error);
+                return null;
+            }
+        }
+
+        // Fetch earnings calendar data
+        async function fetchEarningsCalendar() {
+            try {
+                // Use Finnhub earnings calendar
+                const today = new Date();
+                const from = new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                const to = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                
+                const url = `${API_CONFIG.BASE_URL_FH}/calendar/earnings?from=${from}&to=${to}&token=${API_CONFIG.FINNHUB_KEY}`;
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Filter for S&P 500 companies and process data
+                const filteredEarnings = data.earningsCalendar?.filter(earning => 
+                    sp500Companies.includes(earning.symbol)
+                ) || [];
+                
+                return filteredEarnings.map(earning => ({
+                    symbol: earning.symbol,
+                    date: new Date(earning.date),
+                    type: new Date(earning.date) < new Date() ? 'past' : 'future',
+                    eps: earning.eps,
+                    epsEstimate: earning.epsEstimate,
+                    hour: earning.hour,
+                    quarter: earning.quarter,
+                    revenueEstimate: earning.revenueEstimate,
+                    revenue: earning.revenue,
+                    year: earning.year
+                }));
+            } catch (error) {
+                console.error('Error fetching earnings calendar:', error);
+                return [];
+            }
+        }
+
+        // Fetch real earnings data from PostgreSQL
+        async function fetchRealEarningsData() {
+            try {
+                console.log('📊 Fetching real earnings data from PostgreSQL...');
+                
+                const response = await fetch(`${API_CONFIG.EARNINGS_API}/earnings/timeline`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const timelineData = data.timeline_data || [];
+                
+                console.log(`✅ Loaded ${timelineData.length} real earnings events from database`);
+                
+                // Convert API data to timeline format
+                const processedData = timelineData.map(item => ({
+                    symbol: item.symbol,
+                    company_name: item.company_name,
+                    date: new Date(item.date),
+                    type: item.type,
+                    sector: item.sector,
+                    
+                    // Price and prediction data
+                    priceChange: parseFloat(item.priceChange) || 0,
+                    predictionAccuracy: parseFloat(item.predictionAccuracy) || 0.5,
+                    marketCap: parseFloat(item.marketCap) || 1000,
+                    volume: parseInt(item.volume) || 50000000,
+                    
+                    // Earnings specific data
+                    actualEPS: parseFloat(item.actualEPS) || null,
+                    expectedEPS: parseFloat(item.expectedEPS) || null,
+                    beat_miss_meet: item.beat_miss_meet,
+                    surprise_percent: parseFloat(item.surprise_percent) || null,
+                    
+                    // Future earnings
+                    analystExpectation: item.analystExpectation || (item.type === 'future' ? 'meet' : null),
+                    confidence: parseFloat(item.confidence) || 0.5,
+                    consensusRating: item.consensusRating,
+                    announcement_time: item.announcement_time
+                }));
+                
+                return processedData.sort((a, b) => a.date - b.date);
+                
+            } catch (error) {
+                console.error('❌ Error fetching real earnings data:', error);
+                console.log('🔄 Falling back to mock data...');
+                return generateMockEarningsData();
+            }
+        }
+
+        // Generate combined real and estimated data (updated to use PostgreSQL)
+        async function generateRealData() {
+            try {
+                // Fetch real market data for ticker
+                const marketData = await fetchRealMarketData(sp500Companies, 15);
+                realTickerData = marketData.reduce((acc, stock) => {
+                    if (stock) {
+                        acc[stock.symbol] = stock;
+                    }
+                    return acc;
+                }, {});
+                
+                // Fetch real earnings data from PostgreSQL
+                const earningsData = await fetchRealEarningsData();
+                realEarningsData = earningsData;
+                
+                return realEarningsData;
+            } catch (error) {
+                console.error('Error generating real data:', error);
+                // Fallback to mock data
+                return generateMockEarningsData();
+            }
+        }
+
+        // Fallback mock data generator (smaller, for supplementing real data)
+        function generateMockEarningsData() {
             const data = [];
             const now = new Date();
+            const limitedCompanies = sp500Companies.slice(0, 15);
             
-            sp500Companies.forEach((symbol, index) => {
-                // Past earnings (last 4 quarters)
-                for (let q = 0; q < 4; q++) {
+            limitedCompanies.forEach((symbol) => {
+                // Past earnings (last 2 quarters)
+                for (let q = 0; q < 2; q++) {
                     const date = new Date(now);
                     date.setMonth(date.getMonth() - (q * 3) - Math.random() * 30);
                     
@@ -931,14 +1108,14 @@
                         predictionAccuracy: Math.random(),
                         marketCap: Math.random() * 2000 + 100,
                         volume: Math.random() * 100000000 + 1000000,
-                        sector: ['Technology', 'Healthcare', 'Financial', 'Consumer', 'Energy'][Math.floor(Math.random() * 5)],
+                        sector: getSectorForSymbol(symbol),
                         actualEPS: (Math.random() * 5 + 0.5).toFixed(2),
                         expectedEPS: (Math.random() * 5 + 0.5).toFixed(2)
                     });
                 }
                 
-                // Future earnings (next 4 quarters)
-                for (let q = 0; q < 4; q++) {
+                // Future earnings (next 2 quarters)
+                for (let q = 0; q < 2; q++) {
                     const date = new Date(now);
                     date.setMonth(date.getMonth() + (q * 3) + Math.random() * 30);
                     
@@ -950,18 +1127,44 @@
                         confidence: Math.random(),
                         marketCap: Math.random() * 2000 + 100,
                         volume: Math.random() * 100000000 + 1000000,
-                        sector: ['Technology', 'Healthcare', 'Financial', 'Consumer', 'Energy'][Math.floor(Math.random() * 5)],
+                        sector: getSectorForSymbol(symbol),
                         expectedEPS: (Math.random() * 5 + 0.5).toFixed(2),
                         consensusRating: ['Buy', 'Hold', 'Sell'][Math.floor(Math.random() * 3)]
                     });
                 }
             });
             
-            return data.sort((a, b) => a.date - b.date);
+            return data;
         }
 
-        // Initialize timeline
-        function initializeTimeline() {
+        // Helper function to get sector for symbol (now using API data)
+        function getSectorForSymbol(symbol) {
+            // Try to find the company in the loaded data first
+            const company = sp500CompaniesData.find(c => c.symbol === symbol);
+            if (company && company.gics_sector) {
+                return company.gics_sector;
+            }
+            
+            // Fallback to hardcoded mapping for backward compatibility
+            const sectors = {
+                'AAPL': 'Information Technology', 'MSFT': 'Information Technology', 'GOOGL': 'Communication Services', 'META': 'Communication Services', 'NVDA': 'Information Technology',
+                'TSLA': 'Consumer Discretionary', 'AMZN': 'Consumer Discretionary', 'NFLX': 'Communication Services', 'DIS': 'Communication Services',
+                'JPM': 'Financials', 'BAC': 'Financials', 'V': 'Financials', 'MA': 'Financials',
+                'JNJ': 'Health Care', 'UNH': 'Health Care', 'PFE': 'Health Care', 'ABT': 'Health Care', 'LLY': 'Health Care',
+                'XOM': 'Energy', 'CVX': 'Energy',
+                'PG': 'Consumer Staples', 'KO': 'Consumer Staples', 'WMT': 'Consumer Staples', 'COST': 'Consumer Staples', 'NKE': 'Consumer Discretionary'
+            };
+            return sectors[symbol] || 'Information Technology';
+        }
+
+        // Helper function to get company name for symbol
+        function getCompanyNameForSymbol(symbol) {
+            const company = sp500CompaniesData.find(c => c.symbol === symbol);
+            return company ? company.company_name : symbol;
+        }
+
+        // Initialize timeline with real data
+        async function initializeTimeline() {
             const svg = d3.select('#timeline');
             const container = document.querySelector('.timeline-container');
             const width = container.clientWidth;
@@ -969,104 +1172,157 @@
             
             svg.attr('width', width).attr('height', height);
             
-            const data = generateSampleData();
-            const now = new Date();
+            // Show loading indicator
+            svg.append('text')
+                .attr('x', width / 2)
+                .attr('y', height / 2)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#64ffda')
+                .attr('class', 'loading-text')
+                .text('Loading real earnings data...');
             
-            // Scales
-            const xScale = d3.scaleTime()
-                .domain(d3.extent(data, d => d.date))
-                .range([50, width - 50]);
-            
-            const yScale = d3.scaleLinear()
-                .domain([-15, 15])
-                .range([height - 100, 100]);
-            
-            // Current date line
-            svg.append('line')
-                .attr('class', 'current-date-line')
-                .attr('x1', xScale(now))
-                .attr('x2', xScale(now))
-                .attr('y1', 50)
-                .attr('y2', height - 50);
-            
-            // Earnings icons
-            const icons = svg.selectAll('.earnings-icon')
-                .data(data)
-                .enter()
-                .append('circle')
-                .attr('class', d => `earnings-icon ${d.type}-icon`)
-                .attr('cx', d => xScale(d.date))
-                .attr('cy', d => {
-                    if (d.type === 'past') {
-                        return yScale(d.priceChange);
-                    } else {
-                        const expectationMap = { 'beat': 5, 'meet': 0, 'miss': -5 };
-                        return yScale(expectationMap[d.analystExpectation]);
-                    }
-                })
-                .attr('r', d => {
-                    const sizeMode = document.getElementById('icon-size').value;
-                    switch(sizeMode) {
-                        case 'market-cap': return Math.sqrt(d.marketCap) / 10;
-                        case 'volume': return Math.sqrt(d.volume) / 1000;
-                        default: return 6;
-                    }
-                })
-                .attr('fill', d => {
-                    if (d.type === 'past') {
-                        if (d.predictionAccuracy > 0.7) return '#4444ff';
-                        if (d.predictionAccuracy > 0.4) return '#888888';
-                        return '#ff4444';
-                    } else {
-                        if (d.confidence > 0.7) return '#6bcf7f';
-                        if (d.confidence > 0.4) return '#ffd93d';
-                        return '#ff6b6b';
-                    }
-                })
-                .on('mouseover', showTooltip)
-                .on('mouseout', hideTooltip)
-                .on('click', pinInfo);
-            
-            // Add axis
-            const xAxis = d3.axisBottom(xScale);
-            svg.append('g')
-                .attr('transform', `translate(0, ${height - 80})`)
-                .call(xAxis)
-                .attr('color', '#666');
-            
-            const yAxis = d3.axisLeft(yScale);
-            svg.append('g')
-                .attr('transform', 'translate(40, 0)')
-                .call(yAxis)
-                .attr('color', '#666');
+            try {
+                const data = await generateRealData();
+                const now = new Date();
+                
+                // Remove loading indicator
+                svg.select('.loading-text').remove();
+                
+                // Scales
+                const xScale = d3.scaleTime()
+                    .domain(d3.extent(data, d => d.date))
+                    .range([50, width - 50]);
+                
+                const yScale = d3.scaleLinear()
+                    .domain([-15, 15])
+                    .range([height - 100, 100]);
+                
+                // Current date line
+                svg.append('line')
+                    .attr('class', 'current-date-line')
+                    .attr('x1', xScale(now))
+                    .attr('x2', xScale(now))
+                    .attr('y1', 50)
+                    .attr('y2', height - 50);
+                
+                // Earnings icons
+                const icons = svg.selectAll('.earnings-icon')
+                    .data(data)
+                    .enter()
+                    .append('circle')
+                    .attr('class', d => `earnings-icon ${d.type}-icon`)
+                    .attr('cx', d => xScale(d.date))
+                    .attr('cy', d => {
+                        if (d.type === 'past') {
+                            // Use real price change if available
+                            const priceChange = d.priceChange || (d.eps && d.epsEstimate ? 
+                                ((d.eps - d.epsEstimate) / d.epsEstimate * 100) : 0);
+                            return yScale(priceChange);
+                        } else {
+                            // Use confidence score for future earnings y-axis positioning
+                            // Map confidence (0.0-1.0) to y-axis range (-10 to +10)
+                            const confidence = d.confidence || 0.5;
+                            const confidencePosition = (confidence - 0.5) * 20; // -10 to +10 range
+                            return yScale(confidencePosition);
+                        }
+                    })
+                    .attr('r', d => {
+                        const sizeMode = document.getElementById('icon-size').value;
+                        switch(sizeMode) {
+                            case 'market-cap': return Math.sqrt(d.marketCap || 1000) / 10;
+                            case 'volume': return Math.sqrt(d.volume || 1000000) / 1000;
+                            default: return 6;
+                        }
+                    })
+                    .attr('fill', d => {
+                        if (d.type === 'past') {
+                            // Color based on EPS beat/miss for real data
+                            if (d.eps && d.epsEstimate) {
+                                return d.eps > d.epsEstimate ? '#4444ff' : '#ff4444';
+                            }
+                            // Fallback to prediction accuracy
+                            if (d.predictionAccuracy > 0.7) return '#4444ff';
+                            if (d.predictionAccuracy > 0.4) return '#888888';
+                            return '#ff4444';
+                        } else {
+                            if (d.confidence > 0.7) return '#6bcf7f';
+                            if (d.confidence > 0.4) return '#ffd93d';
+                            return '#ff6b6b';
+                        }
+                    })
+                    .on('mouseover', showTooltip)
+                    .on('mouseout', hideTooltip)
+                    .on('click', pinInfo);
+                
+                // Add axis
+                const xAxis = d3.axisBottom(xScale);
+                svg.append('g')
+                    .attr('transform', `translate(0, ${height - 80})`)
+                    .call(xAxis)
+                    .attr('color', '#666');
+                
+                const yAxis = d3.axisLeft(yScale);
+                svg.append('g')
+                    .attr('transform', 'translate(40, 0)')
+                    .call(yAxis)
+                    .attr('color', '#666');
+                    
+                // Update ticker with real data after timeline loads
+                await updateTickerWithRealData();
+                
+                console.log(`Timeline initialized with ${data.length} earnings events`);
+                console.log(`Real market data loaded for ${Object.keys(realTickerData).length} stocks`);
+                
+            } catch (error) {
+                console.error('Error initializing timeline:', error);
+                svg.select('.loading-text').text('Error loading data. Check console for details.');
+            }
         }
         
         function showTooltip(event, d) {
             const tooltip = document.getElementById('tooltip');
+            
+            // Clear any previous content first
+            tooltip.innerHTML = '';
             tooltip.style.display = 'block';
             tooltip.style.left = event.pageX + 10 + 'px';
             tooltip.style.top = event.pageY - 10 + 'px';
             
+            // Build content from scratch for this specific data item
             let content = `
                 <strong>${d.symbol}</strong><br>
+                ${d.company_name ? d.company_name + '<br>' : ''}
                 Date: ${d.date.toLocaleDateString()}<br>
                 Sector: ${d.sector}<br>
-                Market Cap: $${(d.marketCap).toFixed(1)}B<br>
+                Market Cap: $${(d.marketCap || 1000).toFixed(1)}B<br>
             `;
             
+            // Ensure we're checking the correct type for THIS specific data item
             if (d.type === 'past') {
                 content += `
-                    Price Change: ${d.priceChange > 0 ? '+' : ''}${d.priceChange.toFixed(2)}%<br>
-                    Prediction Accuracy: ${(d.predictionAccuracy * 100).toFixed(1)}%<br>
-                    Actual EPS: ${d.actualEPS}<br>
-                    Expected EPS: ${d.expectedEPS}
+                    <strong>PAST EARNINGS:</strong><br>
+                    Price Change: ${d.priceChange !== null ? (d.priceChange > 0 ? '+' : '') + d.priceChange.toFixed(2) + '%' : 'N/A'}<br>
+                    Result: <strong>${d.beat_miss_meet || 'N/A'}</strong><br>
+                    Actual EPS: $${d.actualEPS !== null ? d.actualEPS.toFixed(2) : 'N/A'}<br>
+                    Expected EPS: $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}<br>
+                    Surprise: ${d.surprise_percent !== null ? (d.surprise_percent > 0 ? '+' : '') + d.surprise_percent.toFixed(1) + '%' : 'N/A'}
+                `;
+            } else if (d.type === 'future') {
+                const expectation = d.analystExpectation || 'meet';
+                content += `
+                    <strong>FUTURE EARNINGS:</strong><br>
+                    Analyst Expectation: <strong>${expectation.toUpperCase()}</strong><br>
+                    Confidence: ${(d.confidence * 100).toFixed(1)}%<br>
+                    Expected EPS: $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}<br>
+                    Consensus: ${d.consensusRating || 'N/A'}<br>
+                    Timing: ${d.announcement_time || 'N/A'}
                 `;
             } else {
+                // Fallback for any undefined type
                 content += `
-                    Analyst Expectation: ${d.analystExpectation.toUpperCase()}<br>
-                    Our Confidence: ${(d.confidence * 100).toFixed(1)}%<br>
-                    Expected EPS: ${d.expectedEPS}<br>
-                    Consensus: ${d.consensusRating}
+                    <strong>EARNINGS DATA:</strong><br>
+                    Type: ${d.type || 'Unknown'}<br>
+                    EPS: $${d.actualEPS || d.expectedEPS || 'N/A'}
                 `;
             }
             
@@ -1074,7 +1330,10 @@
         }
         
         function hideTooltip() {
-            document.getElementById('tooltip').style.display = 'none';
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.display = 'none';
+            // Clear content to prevent any lingering data
+            tooltip.innerHTML = '';
         }
         
         function pinInfo(event, d) {
@@ -1086,26 +1345,35 @@
             let content = `
                 <button class="close-btn" onclick="this.parentElement.remove()">×</button>
                 <h4>${d.symbol} - ${d.date.toLocaleDateString()}</h4>
+                <p><strong>Company:</strong> ${d.company_name || d.symbol}</p>
                 <p><strong>Sector:</strong> ${d.sector}</p>
-                <p><strong>Market Cap:</strong> ${d.marketCap.toFixed(1)}B</p>
-                <p><strong>Volume:</strong> ${(d.volume / 1000000).toFixed(1)}M</p>
+                <p><strong>Market Cap:</strong> ${(d.marketCap || 1000).toFixed(1)}B</p>
+                <p><strong>Volume:</strong> ${((d.volume || 50000000) / 1000000).toFixed(1)}M</p>
             `;
             
             if (d.type === 'past') {
+                const beatMiss = d.beat_miss_meet || (d.actualEPS !== null && d.expectedEPS !== null ? 
+                    (d.actualEPS > d.expectedEPS ? 'BEAT' : 'MISS') : 'N/A');
+                
                 content += `
-                    <p><strong>Price Change:</strong> ${d.priceChange > 0 ? '+' : ''}${d.priceChange.toFixed(2)}%</p>
-                    <p><strong>Prediction Accuracy:</strong> ${(d.predictionAccuracy * 100).toFixed(1)}%</p>
-                    <p><strong>Actual EPS:</strong> ${d.actualEPS}</p>
-                    <p><strong>Expected EPS:</strong> ${d.expectedEPS}</p>
-                    <p><strong>Beat/Miss:</strong> ${parseFloat(d.actualEPS) > parseFloat(d.expectedEPS) ? 'BEAT' : 'MISS'}</p>
+                    <p><strong>Price Change:</strong> ${d.priceChange !== null ? (d.priceChange > 0 ? '+' : '') + d.priceChange.toFixed(2) + '%' : 'N/A'}</p>
+                    <p><strong>Result:</strong> <span style="color: ${beatMiss === 'BEAT' ? '#4444ff' : beatMiss === 'MISS' ? '#ff4444' : '#888'}">${beatMiss}</span></p>
+                    <p><strong>Actual EPS:</strong> $${d.actualEPS !== null ? d.actualEPS.toFixed(2) : 'N/A'}</p>
+                    <p><strong>Expected EPS:</strong> $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}</p>
+                    <p><strong>Surprise:</strong> ${d.surprise_percent !== null ? (d.surprise_percent > 0 ? '+' : '') + d.surprise_percent.toFixed(1) + '%' : 'N/A'}</p>
+                    <p><strong>Confidence Score:</strong> ${((d.predictionAccuracy || 0.5) * 100).toFixed(1)}%</p>
                 `;
             } else {
+                const expectation = d.analystExpectation || 'meet';
+                const daysUntil = Math.ceil((d.date - new Date()) / (1000 * 60 * 60 * 24));
+                
                 content += `
-                    <p><strong>Expectation:</strong> ${d.analystExpectation.toUpperCase()}</p>
-                    <p><strong>Our Confidence:</strong> ${(d.confidence * 100).toFixed(1)}%</p>
-                    <p><strong>Expected EPS:</strong> ${d.expectedEPS}</p>
-                    <p><strong>Consensus Rating:</strong> ${d.consensusRating}</p>
-                    <p><strong>Days Until:</strong> ${Math.ceil((d.date - new Date()) / (1000 * 60 * 60 * 24))}</p>
+                    <p><strong>Expectation:</strong> <span style="color: ${expectation === 'beat' ? '#4444ff' : expectation === 'miss' ? '#ff4444' : '#888'}">${expectation.toUpperCase()}</span></p>
+                    <p><strong>Confidence:</strong> ${(d.confidence * 100).toFixed(1)}%</p>
+                    <p><strong>Expected EPS:</strong> $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}</p>
+                    <p><strong>Consensus:</strong> ${d.consensusRating || 'N/A'}</p>
+                    <p><strong>Timing:</strong> ${d.announcement_time || 'N/A'}</p>
+                    <p><strong>Days Until:</strong> ${daysUntil > 0 ? daysUntil : 'Past'}</p>
                 `;
             }
             
@@ -1183,6 +1451,14 @@
             }
         }
 
+        // Function to get selected model
+        function getSelectedModel() {
+            const modelSelect = document.getElementById('model-select');
+            const selectedModel = modelSelect?.value || 'qwen:1.8b';
+            console.log('Using model:', selectedModel);
+            return selectedModel;
+        }
+
         // Function to update send button state based on input content
         function updateSendButtonState() {
             const chatInput = document.getElementById('chat-input');
@@ -1191,6 +1467,39 @@
             if (chatInput && sendBtn) {
                 const hasText = chatInput.value.trim().length > 0;
                 sendBtn.disabled = !hasText;
+            }
+        }
+
+        // Function to handle model selection change
+        function onModelChange() {
+            const selectedModel = getSelectedModel();
+            addChatMessage(`Switched to model: **${selectedModel}**`, 'assistant');
+            console.log('Model changed to:', selectedModel);
+            
+            // Optionally test if the model is available
+            testModelAvailability(selectedModel);
+        }
+
+        // Function to test if a model is available
+        async function testModelAvailability(modelName) {
+            try {
+                const response = await fetch('http://localhost:11434/api/tags');
+                if (response.ok) {
+                    const data = await response.json();
+                    const availableModels = data.models?.map(m => m.name) || [];
+                    console.log('Available models:', availableModels);
+                    
+                    if (!availableModels.includes(modelName)) {
+                        console.warn(`Model ${modelName} not found in available models`);
+                        addChatMessage(`⚠️ Model **${modelName}** not found. Available models: ${availableModels.join(', ')}. Run \`ollama pull ${modelName}\` to install it.`, 'error');
+                    } else {
+                        console.log(`Model ${modelName} is available`);
+                    }
+                } else {
+                    console.error('Failed to check available models');
+                }
+            } catch (error) {
+                console.error('Error checking model availability:', error);
             }
         }
 
@@ -1211,11 +1520,11 @@
             let icon, label;
             switch (type) {
                 case 'user':
-                    icon = '👤';
+                    icon = '⚔';
                     label = 'You';
                     break;
                 case 'assistant':
-                    icon = '🤖';
+                    icon = '🦸';
                     label = 'Assistant';
                     break;
                 case 'error':
@@ -1253,7 +1562,7 @@
             messageDiv.className = 'chat-message loading assistant';
             
             messageDiv.innerHTML = `
-                <div class="chat-icon assistant">🤖</div>
+                <div class="chat-icon assistant">🦸</div>
                 <div class="chat-message-content">
                     <div class="chat-message-header">
                         Assistant
@@ -1351,7 +1660,7 @@
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            model: document.getElementById('model-select')?.value || 'llama3.1',
+                            model: getSelectedModel(),
                             messages: [
                                 {
                                     role: 'system',
@@ -1379,12 +1688,27 @@
                         addChatMessage(responseText, 'assistant');
                     } else {
                         console.error('Ollama API error:', response.status, response.statusText);
+                        
+                        // Try to get error details from response
+                        let errorDetails = '';
+                        try {
+                            const errorData = await response.text();
+                            console.error('Ollama error details:', errorData);
+                            errorDetails = errorData;
+                        } catch (e) {
+                            console.error('Could not read error response');
+                        }
+                        
                         let errorMessage = `Failed to get response from Ollama (Error ${response.status}).`;
                         
                         if (response.status === 404) {
-                            errorMessage += ' Please check:\n• Ollama is running: `ollama serve`\n• Model is installed: `ollama pull llama3.1`\n• API is accessible at localhost:11434';
+                            errorMessage += ' Please check:\n• Ollama is running: `ollama serve`\n• Model is installed: `ollama pull llama3.1:8b`\n• API is accessible at localhost:11434';
                         } else if (response.status === 500) {
-                            errorMessage += ' Internal server error. Try restarting Ollama.';
+                            errorMessage += ' Internal server error. This often means:\n• Model not found or not loaded\n• Insufficient memory/resources\n• Model name format issue';
+                            if (errorDetails) {
+                                errorMessage += `\n\nServer response: ${errorDetails}`;
+                            }
+                            errorMessage += `\n\nTry:\n• \`ollama pull ${getSelectedModel()}\`\n• \`ollama list\` to check available models\n• Restart Ollama: \`ollama serve\``;
                         }
                         
                         addChatMessage(errorMessage, 'error');
@@ -1446,30 +1770,96 @@
             document.getElementById('rep-penalty-value').textContent = this.value;
         });
 
-        // Ticker functionality
-        function updateTicker() {
+        // Update ticker with real market data
+        async function updateTickerWithRealData() {
             const type = document.getElementById('ticker-type').value;
             const ticker = document.getElementById('ticker');
             
             let content = '';
+            
+            if (type === 'sector' && Object.keys(realTickerData).length > 0) {
+                // Group by sector and calculate average performance
+                const sectorPerformance = {};
+                Object.values(realTickerData).forEach(stock => {
+                    const sector = getSectorForSymbol(stock.symbol);
+                    if (!sectorPerformance[sector]) {
+                        sectorPerformance[sector] = { total: 0, count: 0 };
+                    }
+                    sectorPerformance[sector].total += stock.changePercent;
+                    sectorPerformance[sector].count += 1;
+                });
+                
+                content = Object.entries(sectorPerformance)
+                    .map(([sector, data]) => {
+                        const avg = (data.total / data.count).toFixed(1);
+                        const sign = avg > 0 ? '+' : '';
+                        return `<span class="ticker-item">${sector} ${sign}${avg}%</span>`;
+                    })
+                    .join('');
+            } else if (type === 'earnings' && realEarningsData.length > 0) {
+                // Show upcoming earnings from real data
+                const upcoming = realEarningsData
+                    .filter(earning => earning.type === 'future')
+                    .sort((a, b) => a.date - b.date)
+                    .slice(0, 10);
+                    
+                content = upcoming
+                    .map(earning => {
+                        const dateStr = earning.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        return `<span class="ticker-item">${earning.symbol}: ${dateStr}</span>`;
+                    })
+                    .join('');
+            } else if (Object.keys(realTickerData).length > 0) {
+                // Show real stock data
+                const sortedStocks = Object.values(realTickerData)
+                    .sort((a, b) => {
+                        switch(type) {
+                            case 'volume': return b.volume - a.volume;
+                            default: return b.changePercent - a.changePercent;
+                        }
+                    })
+                    .slice(0, 10);
+                
+                content = sortedStocks
+                    .map(stock => {
+                        if (type === 'volume') {
+                            const volumeM = (stock.volume / 1000000).toFixed(1);
+                            return `<span class="ticker-item">${stock.symbol} ${volumeM}M vol</span>`;
+                        } else {
+                            const sign = stock.changePercent > 0 ? '+' : '';
+                            return `<span class="ticker-item">${stock.symbol} ${sign}${stock.changePercent.toFixed(1)}%</span>`;
+                        }
+                    })
+                    .join('');
+            } else {
+                // Fallback to static content
+                content = getFallbackTickerContent(type);
+            }
+            
+            ticker.innerHTML = content || '<span class="ticker-item">Loading market data...</span>';
+        }
+
+        // Fallback ticker content when real data isn't available
+        function getFallbackTickerContent(type) {
             switch(type) {
                 case 'sector':
-                    content = '<span class="ticker-item">Technology +1.8%</span><span class="ticker-item">Healthcare +0.9%</span><span class="ticker-item">Financial +2.1%</span><span class="ticker-item">Energy -1.2%</span><span class="ticker-item">Consumer +0.7%</span>';
-                    break;
+                    return '<span class="ticker-item">Technology +1.8%</span><span class="ticker-item">Healthcare +0.9%</span><span class="ticker-item">Financial +2.1%</span><span class="ticker-item">Energy -1.2%</span><span class="ticker-item">Consumer +0.7%</span>';
                 case 'earnings':
-                    content = '<span class="ticker-item">AAPL: Jul 15</span><span class="ticker-item">MSFT: Jul 16</span><span class="ticker-item">GOOGL: Jul 17</span><span class="ticker-item">TSLA: Jul 18</span><span class="ticker-item">AMZN: Jul 19</span>';
-                    break;
+                    return '<span class="ticker-item">AAPL: Jul 15</span><span class="ticker-item">MSFT: Jul 16</span><span class="ticker-item">GOOGL: Jul 17</span><span class="ticker-item">TSLA: Jul 18</span><span class="ticker-item">AMZN: Jul 19</span>';
                 case 'volume':
-                    content = '<span class="ticker-item">NVDA 45.2M vol</span><span class="ticker-item">AAPL 38.1M vol</span><span class="ticker-item">TSLA 31.7M vol</span><span class="ticker-item">AMD 28.3M vol</span>';
-                    break;
+                    return '<span class="ticker-item">NVDA 45.2M vol</span><span class="ticker-item">AAPL 38.1M vol</span><span class="ticker-item">TSLA 31.7M vol</span><span class="ticker-item">AMD 28.3M vol</span>';
                 case 'news':
-                    content = '<span class="ticker-item">📈 AI stocks surge on chip demand</span><span class="ticker-item">📊 Q2 earnings beat expectations</span><span class="ticker-item">🏦 Fed signals rate stability</span>';
-                    break;
+                    return '<span class="ticker-item">📈 AI stocks surge on chip demand</span><span class="ticker-item">📊 Q2 earnings beat expectations</span><span class="ticker-item">🏦 Fed signals rate stability</span>';
                 case 'social':
-                    content = '<span class="ticker-item">🔥 #NVDA trending</span><span class="ticker-item">📱 #AAPL iPhone buzz</span><span class="ticker-item">🚗 #TSLA autonomous driving</span>';
-                    break;
+                    return '<span class="ticker-item">🔥 #NVDA trending</span><span class="ticker-item">📱 #AAPL iPhone buzz</span><span class="ticker-item">🚗 #TSLA autonomous driving</span>';
+                default:
+                    return '<span class="ticker-item">Market data unavailable</span>';
             }
-            ticker.innerHTML = content;
+        }
+
+        // Legacy function for compatibility
+        function updateTicker() {
+            updateTickerWithRealData();
         }
         
         document.getElementById('ticker-type').addEventListener('change', updateTicker);
@@ -1530,14 +1920,53 @@
             svg.call(zoom);
         }
 
-        // Data loading simulation
-        function loadSP500Data() {
-            // In a real implementation, this would fetch from:
-            // 1. Wikipedia for S&P 500 company list
-            // 2. Financial APIs for earnings dates
-            // 3. Your prediction models for confidence scores
-            console.log('Loading S&P 500 data...');
-            return sp500Companies;
+        // Load real S&P 500 data from API
+        async function loadSP500Data() {
+            try {
+                console.log('📡 Fetching all 503 S&P 500 companies from API...');
+                
+                // Fetch company symbols
+                const symbolsResponse = await fetch(`${API_CONFIG.SP500_API}/symbols`);
+                if (!symbolsResponse.ok) {
+                    throw new Error(`HTTP error! status: ${symbolsResponse.status}`);
+                }
+                const symbolsData = await symbolsResponse.json();
+                sp500Companies = symbolsData.symbols;
+                
+                // Fetch full company data
+                const companiesResponse = await fetch(`${API_CONFIG.SP500_API}/companies`);
+                if (!companiesResponse.ok) {
+                    throw new Error(`HTTP error! status: ${companiesResponse.status}`);
+                }
+                const companiesData = await companiesResponse.json();
+                sp500CompaniesData = companiesData.companies;
+                
+                // Fetch sectors data
+                const sectorsResponse = await fetch(`${API_CONFIG.SP500_API}/sectors`);
+                if (!sectorsResponse.ok) {
+                    throw new Error(`HTTP error! status: ${sectorsResponse.status}`);
+                }
+                const sectorsData = await sectorsResponse.json();
+                sp500SectorsData = sectorsData.sectors;
+                
+                console.log(`✅ Loaded ${sp500Companies.length} S&P 500 companies from API`);
+                console.log(`📊 Loaded ${sp500SectorsData.length} sectors`);
+                console.log(`📅 Data last updated: ${companiesData.last_update}`);
+                
+                return sp500Companies;
+                
+            } catch (error) {
+                console.error('❌ Error loading S&P 500 data from API:', error);
+                console.log('🔄 Falling back to basic company list...');
+                
+                // Fallback to a basic list for demo purposes
+                sp500Companies = [
+                    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'JPM', 'JNJ', 'V',
+                    'PG', 'UNH', 'HD', 'MA', 'PFE', 'BAC', 'XOM', 'DIS', 'ADBE', 'CRM',
+                    'NFLX', 'KO', 'VZ', 'INTC', 'CSCO', 'ABT', 'PEP', 'TMO', 'AVGO', 'ACN'
+                ];
+                return sp500Companies;
+            }
         }
 
         // MCP Server integration points
@@ -1567,10 +1996,75 @@
         // Ollama integration - now handled by dashboard-integration.js
         // Legacy functions maintained for compatibility
 
+        // Populate portfolio section with real sector data
+        function populatePortfolioSectors() {
+            const portfolioList = document.getElementById('portfolio-list');
+            if (!portfolioList || sp500SectorsData.length === 0) return;
+            
+            // Clear loading message
+            portfolioList.innerHTML = '';
+            
+            // Sort sectors by company count (descending)
+            const sortedSectors = sp500SectorsData
+                .sort((a, b) => b.company_count - a.company_count)
+                .slice(0, 5); // Show top 5 sectors
+            
+            sortedSectors.forEach(sector => {
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+                listItem.style.cursor = 'pointer';
+                
+                // Color code by sector type
+                let typeClass = 'Real';
+                let typeColor = '#4a90e2';
+                if (sector.company_count > 70) {
+                    typeClass = 'Large';
+                    typeColor = '#6bcf7f';
+                } else if (sector.company_count < 30) {
+                    typeClass = 'Small';
+                    typeColor = '#ff6b6b';
+                }
+                
+                listItem.innerHTML = `
+                    <div class="list-header">
+                        <span class="list-name">${sector.sector_name}</span>
+                        <span class="list-type" style="background: ${typeColor}">${typeClass}</span>
+                    </div>
+                    <div class="stock-count">${sector.company_count} companies</div>
+                `;
+                
+                // Add click handler to filter by sector
+                listItem.addEventListener('click', () => {
+                    console.log(`Filtering by sector: ${sector.sector_name}`);
+                    filterBySector(sector.sector_name);
+                });
+                
+                portfolioList.appendChild(listItem);
+            });
+            
+            console.log(`📊 Populated portfolio with ${sortedSectors.length} sectors`);
+        }
+        
+        // Filter functions for sectors
+        function filterBySector(sectorName) {
+            console.log(`🔍 Filtering timeline by sector: ${sectorName}`);
+            // This could be implemented to filter the timeline by sector
+            // For now, just log the action
+            addChatMessage(`Showing companies in sector: **${sectorName}**`, 'assistant');
+        }
+
         // Initialize the dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeTimeline();
-            loadSP500Data();
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load S&P 500 data first
+            await loadSP500Data();
+            
+            // Populate portfolio section with sector data
+            populatePortfolioSectors();
+            
+            // Initialize timeline with real data (async)
+            await initializeTimeline();
+            
+            // Update ticker (will use real data if available)
             updateTicker();
             
             // Add zoom and pan after initialization
@@ -1579,6 +2073,7 @@
             // Setup chat input and send button event listeners
             const chatInput = document.getElementById('chat-input');
             const sendBtn = document.getElementById('chat-send-btn');
+            const modelSelect = document.getElementById('model-select');
             
             if (chatInput) {
                 // Update button state on input
@@ -1599,6 +2094,14 @@
             if (sendBtn) {
                 // Handle button click
                 sendBtn.addEventListener('click', sendChatMessage);
+            }
+
+            if (modelSelect) {
+                // Handle model selection change
+                modelSelect.addEventListener('change', onModelChange);
+                
+                // Log initial model selection
+                console.log('Initial model:', getSelectedModel());
             }
             
             // Initial button state

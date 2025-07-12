@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Earnings Tooltip Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Earnings Tooltip Data Fix Test</h1>
+    
+    <div class="status info">
+        <h3>🔧 Issue Fixed:</h3>
+        <p>The problem was that the PostgreSQL API returns string values for numeric fields like actualEPS, expectedEPS, priceChange, etc., but the dashboard was trying to call <code>.toFixed()</code> on these strings, causing the tooltip to fail.</p>
+    </div>
+    
+    <div class="status success">
+        <h3>✅ Solution Applied:</h3>
+        <ul>
+            <li>Added <code>parseFloat()</code> conversion for all numeric fields in data processing</li>
+            <li>Updated tooltip display logic to handle null values properly</li>
+            <li>Fixed both regular tooltip and pinned info sections</li>
+        </ul>
+    </div>
+    
+    <div class="status info">
+        <h3>📊 Testing Past Earnings Data:</h3>
+        <div id="test-results">Loading test results...</div>
+    </div>
+    
+    <div class="status info">
+        <h3>🔍 Sample Past Earnings:</h3>
+        <table id="past-earnings-table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Company</th>
+                    <th>Date</th>
+                    <th>Actual EPS</th>
+                    <th>Expected EPS</th>
+                    <th>Beat/Miss/Meet</th>
+                    <th>Surprise %</th>
+                    <th>Price Change %</th>
+                </tr>
+            </thead>
+            <tbody id="past-earnings-body">
+                <tr><td colspan="8">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        async function testEarningsData() {
+            try {
+                const response = await fetch('http://localhost:5002/api/earnings/timeline');
+                const data = await response.json();
+                
+                // Filter for past earnings
+                const pastEarnings = data.timeline_data.filter(item => item.type === 'past');
+                
+                console.log('Past earnings sample:', pastEarnings[0]);
+                
+                // Test data processing like dashboard does
+                const processedEarnings = pastEarnings.slice(0, 10).map(item => ({
+                    symbol: item.symbol,
+                    company_name: item.company_name,
+                    date: new Date(item.date),
+                    type: item.type,
+                    
+                    // Apply same parsing as dashboard
+                    priceChange: parseFloat(item.priceChange) || 0,
+                    actualEPS: parseFloat(item.actualEPS) || null,
+                    expectedEPS: parseFloat(item.expectedEPS) || null,
+                    beat_miss_meet: item.beat_miss_meet,
+                    surprise_percent: parseFloat(item.surprise_percent) || null,
+                }));
+                
+                // Test tooltip content generation
+                let testResults = '';
+                let hasErrors = false;
+                
+                processedEarnings.forEach((d, index) => {
+                    try {
+                        // Test the tooltip content generation logic
+                        let content = `
+                            <strong>PAST EARNINGS:</strong><br>
+                            Price Change: ${d.priceChange !== null ? (d.priceChange > 0 ? '+' : '') + d.priceChange.toFixed(2) + '%' : 'N/A'}<br>
+                            Result: <strong>${d.beat_miss_meet || 'N/A'}</strong><br>
+                            Actual EPS: $${d.actualEPS !== null ? d.actualEPS.toFixed(2) : 'N/A'}<br>
+                            Expected EPS: $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}<br>
+                            Surprise: ${d.surprise_percent !== null ? (d.surprise_percent > 0 ? '+' : '') + d.surprise_percent.toFixed(1) + '%' : 'N/A'}
+                        `;
+                        
+                        if (index === 0) {
+                            testResults += `<strong>Sample tooltip for ${d.symbol}:</strong><br>${content.replace(/\n/g, '').trim()}<br><br>`;
+                        }
+                        
+                    } catch (error) {
+                        hasErrors = true;
+                        testResults += `<span style="color: red;">❌ Error testing ${d.symbol}: ${error.message}</span><br>`;
+                    }
+                });
+                
+                if (!hasErrors) {
+                    testResults = `<span style="color: green;">✅ All tooltip tests passed!</span><br><br>` + testResults;
+                } else {
+                    testResults = `<span style="color: red;">❌ Some tooltip tests failed!</span><br><br>` + testResults;
+                }
+                
+                document.getElementById('test-results').innerHTML = testResults;
+                
+                // Fill table with sample data
+                const tbody = document.getElementById('past-earnings-body');
+                tbody.innerHTML = '';
+                
+                processedEarnings.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.symbol}</td>
+                        <td>${item.company_name}</td>
+                        <td>${item.date.toDateString()}</td>
+                        <td>$${item.actualEPS !== null ? item.actualEPS.toFixed(2) : 'N/A'}</td>
+                        <td>$${item.expectedEPS !== null ? item.expectedEPS.toFixed(2) : 'N/A'}</td>
+                        <td style="color: ${item.beat_miss_meet === 'BEAT' ? 'green' : item.beat_miss_meet === 'MISS' ? 'red' : 'orange'}">${item.beat_miss_meet || 'N/A'}</td>
+                        <td>${item.surprise_percent !== null ? (item.surprise_percent > 0 ? '+' : '') + item.surprise_percent.toFixed(1) + '%' : 'N/A'}</td>
+                        <td>${item.priceChange !== null ? (item.priceChange > 0 ? '+' : '') + item.priceChange.toFixed(2) + '%' : 'N/A'}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error testing earnings data:', error);
+                document.getElementById('test-results').innerHTML = `<span style="color: red;">❌ Error: ${error.message}</span>`;
+                document.getElementById('past-earnings-body').innerHTML = 
+                    '<tr><td colspan="8">Error loading data</td></tr>';
+            }
+        }
+        
+        // Run test when page loads
+        window.onload = testEarningsData;
+    </script>
+</body>
+</html>

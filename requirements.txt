@@ -1,0 +1,23 @@
+# Kafka and data processing
+kafka-python==2.0.2
+confluent-kafka==2.3.0
+
+# Data handling
+pandas==2.1.4
+requests==2.31.0
+
+# Web framework for streaming endpoint
+flask==3.0.0
+flask-cors==4.0.0
+
+# Database
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+
+# Vector embeddings
+sentence-transformers==2.2.2
+numpy==1.25.2
+
+# Utilities
+python-dotenv==1.0.0
+schedule==1.2.0

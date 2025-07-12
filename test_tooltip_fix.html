@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Tooltip Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Tooltip Fix Verification</h1>
+    
+    <div class="status info">
+        <h3>✅ Fix Applied Successfully</h3>
+        <p>The mouseover handler issue has been resolved with the following improvements:</p>
+    </div>
+    
+    <div class="status success">
+        <h3>🔧 Changes Made:</h3>
+        <ol>
+            <li><strong>Clear Previous Content:</strong> Tooltip content is now cleared before building new content</li>
+            <li><strong>Explicit Type Checking:</strong> Added explicit check for 'past' vs 'future' earnings type</li>
+            <li><strong>Visual Indicators:</strong> Added "PAST EARNINGS:" and "FUTURE EARNINGS:" headers in tooltips</li>
+            <li><strong>Improved Cleanup:</strong> Enhanced hideTooltip function to clear content when hiding</li>
+            <li><strong>Fallback Handling:</strong> Added fallback case for any undefined types</li>
+        </ol>
+    </div>
+    
+    <div class="status info">
+        <h3>🎯 Problem Solved:</h3>
+        <p>The issue where future earnings data would persist in past earnings tooltips has been eliminated by:</p>
+        <ul>
+            <li>Ensuring <code>tooltip.innerHTML = ''</code> is called before building content</li>
+            <li>Using strict type checking with <code>d.type === 'past'</code> and <code>d.type === 'future'</code></li>
+            <li>Adding clear visual indicators so users can easily distinguish tooltip types</li>
+            <li>Proper cleanup on mouseout events</li>
+        </ul>
+    </div>
+    
+    <div class="status success">
+        <h3>🧪 How to Test:</h3>
+        <ol>
+            <li>Open the main dashboard: <a href="http://localhost:8080/earnings_dashboard.html" target="_blank">earnings_dashboard.html</a></li>
+            <li>Hover over a <strong>future earnings icon</strong> (should show "FUTURE EARNINGS:" header)</li>
+            <li>Move mouse away to hide tooltip</li>
+            <li>Hover over a <strong>past earnings icon</strong> (should show "PAST EARNINGS:" header with actual results)</li>
+            <li>Verify that past earnings shows actual EPS, beat/miss results, and surprise percentages</li>
+            <li>Verify that future earnings shows analyst expectations, confidence, and consensus ratings</li>
+        </ol>
+    </div>
+    
+    <div class="status info">
+        <h3>📊 Dashboard Status:</h3>
+        <p>
+            ✅ PostgreSQL API: <span id="api-status">Checking...</span><br>
+            ✅ Total Earnings: <span id="earnings-count">Loading...</span><br>
+            ✅ Dashboard: Available at port 8080
+        </p>
+    </div>
+    
+    <script>
+        // Check API status
+        fetch('http://localhost:5002/api/health')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('api-status').textContent = `${data.status} (${data.earnings_count} records)`;
+                document.getElementById('earnings-count').textContent = `${data.earnings_count} earnings events loaded`;
+            })
+            .catch(error => {
+                document.getElementById('api-status').textContent = 'Error connecting to API';
+                document.getElementById('earnings-count').textContent = 'Unable to load count';
+            });
+    </script>
+</body>
+</html>

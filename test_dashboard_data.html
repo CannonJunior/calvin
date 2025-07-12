@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard Data Loading</title>
+</head>
+<body>
+    <h1>Dashboard Data Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        // API Configuration
+        const API_CONFIG = {
+            EARNINGS_API: 'http://localhost:5002/api'
+        };
+        
+        async function testDataLoading() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing data loading...</p>';
+            
+            try {
+                console.log('📊 Fetching real earnings data from PostgreSQL...');
+                
+                const response = await fetch(`${API_CONFIG.EARNINGS_API}/earnings/timeline`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const timelineData = data.timeline_data || [];
+                
+                console.log(`✅ Loaded ${timelineData.length} real earnings events from database`);
+                
+                // Process first few items for display
+                const processedData = timelineData.slice(0, 10).map(item => ({
+                    symbol: item.symbol,
+                    company_name: item.company_name,
+                    date: new Date(item.date),
+                    type: item.type,
+                    actualEPS: item.actualEPS,
+                    expectedEPS: item.expectedEPS,
+                    beat_miss_meet: item.beat_miss_meet,
+                    surprise_percent: item.surprise_percent
+                }));
+                
+                console.log('Sample processed data:', processedData);
+                
+                // Display results
+                results.innerHTML = `
+                    <h2>✅ Success!</h2>
+                    <p><strong>Total earnings events:</strong> ${timelineData.length}</p>
+                    <p><strong>Sample earnings data:</strong></p>
+                    <table border="1" style="border-collapse: collapse; width: 100%;">
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Company</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Actual EPS</th>
+                            <th>Expected EPS</th>
+                            <th>Beat/Miss/Meet</th>
+                            <th>Surprise %</th>
+                        </tr>
+                        ${processedData.map(item => `
+                            <tr>
+                                <td>${item.symbol}</td>
+                                <td>${item.company_name}</td>
+                                <td>${item.date.toDateString()}</td>
+                                <td style="color: ${item.type === 'past' ? 'blue' : 'green'}">${item.type}</td>
+                                <td>${item.actualEPS || 'N/A'}</td>
+                                <td>${item.expectedEPS || 'N/A'}</td>
+                                <td style="color: ${item.beat_miss_meet === 'BEAT' ? 'green' : item.beat_miss_meet === 'MISS' ? 'red' : 'orange'}">${item.beat_miss_meet || 'N/A'}</td>
+                                <td>${item.surprise_percent || 'N/A'}%</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    <p><em>Data appears to be loading correctly from PostgreSQL API!</em></p>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Error fetching real earnings data:', error);
+                results.innerHTML = `
+                    <h2>❌ Error</h2>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Check the browser console for more details.</p>
+                `;
+            }
+        }
+        
+        // Run test when page loads
+        window.onload = testDataLoading;
+    </script>
+</body>
+</html>

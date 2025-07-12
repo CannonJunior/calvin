@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Future Earnings Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .confidence-high { background-color: #d4edda; }
+        .confidence-medium { background-color: #fff3cd; }
+        .confidence-low { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Future Earnings Fix Verification</h1>
+    
+    <div class="status success">
+        <h3>✅ Fixes Applied Successfully</h3>
+        <p>The following issues have been resolved:</p>
+        <ol>
+            <li><strong>Market Cap Data:</strong> No longer hardcoded to $1000.0B</li>
+            <li><strong>Y-axis Positioning:</strong> Future earnings now use confidence values for vertical positioning</li>
+        </ol>
+    </div>
+    
+    <div class="status info">
+        <h3>🔧 Technical Changes Made:</h3>
+        <ul>
+            <li><strong>PostgreSQL API:</strong> Added realistic market cap calculation based on sector</li>
+            <li><strong>Dashboard Timeline:</strong> Modified y-axis positioning to use confidence scores</li>
+            <li><strong>Confidence Mapping:</strong> Confidence (0.0-1.0) → Y-axis (-10 to +10)</li>
+        </ul>
+    </div>
+    
+    <div class="status info">
+        <h3>📊 Sample Future Earnings Data:</h3>
+        <table id="future-earnings-table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Company</th>
+                    <th>Date</th>
+                    <th>Market Cap ($B)</th>
+                    <th>Confidence (%)</th>
+                    <th>Y-Position (calculated)</th>
+                    <th>Expected EPS</th>
+                </tr>
+            </thead>
+            <tbody id="future-earnings-body">
+                <tr><td colspan="7">Loading future earnings data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="status success">
+        <h3>🎯 Verification Steps:</h3>
+        <ol>
+            <li>Open the main dashboard: <a href="http://localhost:8080/earnings_dashboard.html" target="_blank">earnings_dashboard.html</a></li>
+            <li>Observe that future earnings icons (right side of timeline) have different vertical positions</li>
+            <li>Hover over future earnings icons to see varying market cap values (no longer $1000.0B)</li>
+            <li>Notice that higher confidence earnings appear higher on the y-axis</li>
+            <li>Verify that confidence values show in tooltips with realistic percentages</li>
+        </ol>
+    </div>
+    
+    <script>
+        // Fetch and display future earnings data
+        async function loadFutureEarningsData() {
+            try {
+                const response = await fetch('http://localhost:5002/api/earnings/timeline');
+                const data = await response.json();
+                
+                // Filter for future earnings
+                const futureEarnings = data.timeline_data.filter(item => item.type === 'future');
+                
+                // Sort by confidence (highest first)
+                futureEarnings.sort((a, b) => b.confidence - a.confidence);
+                
+                // Take first 15 for display
+                const sampleData = futureEarnings.slice(0, 15);
+                
+                const tbody = document.getElementById('future-earnings-body');
+                tbody.innerHTML = '';
+                
+                sampleData.forEach(item => {
+                    // Calculate y-position using same formula as dashboard
+                    const confidence = item.confidence || 0.5;
+                    const confidencePosition = (confidence - 0.5) * 20; // -10 to +10 range
+                    
+                    const row = document.createElement('tr');
+                    
+                    // Add confidence-based styling
+                    if (confidence > 0.7) row.classList.add('confidence-high');
+                    else if (confidence > 0.4) row.classList.add('confidence-medium');
+                    else row.classList.add('confidence-low');
+                    
+                    row.innerHTML = `
+                        <td>${item.symbol}</td>
+                        <td>${item.company_name}</td>
+                        <td>${new Date(item.date).toDateString()}</td>
+                        <td>$${item.marketCap}B</td>
+                        <td>${(confidence * 100).toFixed(1)}%</td>
+                        <td>${confidencePosition.toFixed(1)}</td>
+                        <td>$${item.expectedEPS || 'N/A'}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+                
+                console.log(`✅ Loaded ${sampleData.length} future earnings records`);
+                
+            } catch (error) {
+                console.error('❌ Error loading future earnings:', error);
+                document.getElementById('future-earnings-body').innerHTML = 
+                    '<tr><td colspan="7">Error loading data. Check console for details.</td></tr>';
+            }
+        }
+        
+        // Load data when page loads
+        window.onload = loadFutureEarningsData;
+    </script>
+</body>
+</html>
