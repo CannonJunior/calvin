@@ -209,6 +209,7 @@ class PostgresEarningsAPI:
                         e.symbol,
                         c.company_name,
                         c.gics_sector,
+                        c.market_cap_billions,
                         e.earnings_date,
                         e.quarter,
                         e.year,
@@ -221,6 +222,7 @@ class PostgresEarningsAPI:
                         e.announcement_time,
                         e.price_change_percent,
                         e.volume,
+                        e.source_url,
                         CASE 
                             WHEN e.earnings_date < CURRENT_DATE THEN 'past'
                             ELSE 'future'
@@ -237,6 +239,7 @@ class PostgresEarningsAPI:
                         END as timeline_y_value
                     FROM earnings e
                     JOIN companies c ON e.company_id = c.id
+                    WHERE e.source_url IS NOT NULL AND e.source_url != ''
                     ORDER BY e.earnings_date
                 """
                 
@@ -246,28 +249,11 @@ class PostgresEarningsAPI:
                 # Format data for timeline
                 timeline_data = []
                 for earning in earnings:
-                    # Calculate realistic market cap based on sector and company
-                    sector_market_caps = {
-                        'Information Technology': {'min': 50, 'max': 3000},
-                        'Health Care': {'min': 30, 'max': 500},
-                        'Financials': {'min': 20, 'max': 600},
-                        'Consumer Discretionary': {'min': 15, 'max': 1200},
-                        'Communication Services': {'min': 25, 'max': 1800},
-                        'Industrials': {'min': 10, 'max': 400},
-                        'Consumer Staples': {'min': 20, 'max': 300},
-                        'Energy': {'min': 5, 'max': 500},
-                        'Utilities': {'min': 15, 'max': 150},
-                        'Real Estate': {'min': 5, 'max': 100},
-                        'Materials': {'min': 8, 'max': 200}
-                    }
-                    
-                    sector = earning.get('gics_sector', 'Information Technology')
-                    sector_caps = sector_market_caps.get(sector, {'min': 20, 'max': 500})
-                    
-                    # Use symbol hash for consistent market cap per company
-                    symbol_hash = hash(earning['symbol']) % 1000
-                    market_cap_range = sector_caps['max'] - sector_caps['min']
-                    market_cap = sector_caps['min'] + (symbol_hash / 1000) * market_cap_range
+                    # Use verified market cap from companies table, with fallback
+                    market_cap = earning.get('market_cap_billions')
+                    if not market_cap:
+                        # Fallback for companies without verified market cap
+                        market_cap = 100.0  # Default placeholder
                     
                     timeline_item = {
                         'id': earning['id'],
@@ -277,11 +263,12 @@ class PostgresEarningsAPI:
                         'type': earning['type'],
                         'sector': earning['gics_sector'],
                         
-                        # Timeline-specific fields
+                        # Timeline-specific fields with verified data
                         'priceChange': earning.get('price_change_percent', 0),
                         'predictionAccuracy': earning.get('confidence_score', 0.5),
-                        'marketCap': round(market_cap, 1),  # Realistic market cap based on sector
+                        'marketCap': float(market_cap),  # Verified market cap from companies table
                         'volume': earning.get('volume', 50000000),
+                        'source_url': earning.get('source_url'),  # Include source for verification
                         
                         # Earnings data
                         'actualEPS': earning.get('actual_eps'),

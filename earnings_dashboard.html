@@ -148,6 +148,92 @@
             display: flex;
             gap: 15px;
             align-items: center;
+            position: relative;
+        }
+
+        /* Company Search */
+        .company-search-container {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .company-search-input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            width: 200px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .company-search-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.2);
+            border-color: #64ffda;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+
+        .company-search-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Autocomplete Panel */
+        .autocomplete-panel {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid #333;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            display: none;
+            margin-top: 5px;
+        }
+
+        .autocomplete-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+            transition: background 0.2s ease;
+        }
+
+        .autocomplete-item:hover {
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-symbol {
+            font-weight: 600;
+            color: #64ffda;
+            font-size: 13px;
+        }
+
+        .autocomplete-name {
+            color: #ffffff;
+            font-size: 12px;
+            margin: 2px 0;
+        }
+
+        .autocomplete-sector {
+            color: #888;
+            font-size: 11px;
+        }
+
+        /* Highlighted earnings icons */
+        .earnings-icon.highlighted {
+            filter: drop-shadow(0 0 8px #ffeb3b) saturate(1.5);
+            stroke: #ffeb3b;
+            stroke-width: 2;
         }
 
         .mcp-tool {
@@ -522,7 +608,7 @@
         }
 
         .chat-icon.assistant {
-            background: linear-gradient(135deg, #6bcf7f, #4caf50);
+            background: linear-gradient(135deg, #777, #333);
             color: white;
         }
 
@@ -727,6 +813,18 @@
                     <option value="90day-performance">90-Day Performance</option>
                 </select>
             </div>
+            
+            <div class="config-group">
+                <label>Y-Axis Positioning</label>
+                <select id="y-axis-mode">
+                    <option value="confidence">Confidence</option>
+                    <option value="price-change">Price Change</option>
+                    <option value="surprise-percent">Surprise %</option>
+                    <option value="eps-growth">EPS Growth</option>
+                    <option value="market-cap">Market Cap</option>
+                </select>
+            </div>
+            
             <div class="config-group">
                 <label>Color Scheme</label>
                 <select id="color-scheme">
@@ -742,6 +840,15 @@
         <div class="main-content">
             <!-- MCP Tools -->
             <div class="mcp-tools">
+                <!-- Company Search -->
+                <div class="company-search-container">
+                    <input type="text" 
+                           class="company-search-input" 
+                           id="company-search"
+                           placeholder="🔍 Search S&P 500 companies..."
+                           autocomplete="off">
+                    <div class="autocomplete-panel" id="autocomplete-panel"></div>
+                </div>
                 <div class="mcp-tool" onclick="performSentimentAnalysis()">📊 Sentiment Analysis</div>
                 <div class="mcp-tool" onclick="findSimilarCompanies()">🔍 Find Similar Companies</div>
                 <div class="mcp-tool" onclick="addIPOCompanies()">📈 Add IPO Companies</div>
@@ -1163,6 +1270,69 @@
             return company ? company.company_name : symbol;
         }
 
+        // Get Y-axis label based on selected mode
+        function getYAxisLabel() {
+            const yAxisMode = document.getElementById('y-axis-mode').value;
+            
+            switch(yAxisMode) {
+                case 'confidence': return 'Confidence / Price Change (%)';
+                case 'price-change': return 'Price Change (%)';
+                case 'surprise-percent': return 'Earnings Surprise (%)';
+                case 'eps-growth': return 'EPS Growth (%)';
+                case 'market-cap': return 'Market Cap (Log Scale)';
+                default: return 'Value';
+            }
+        }
+
+        // Calculate Y position based on selected mode
+        function getYPosition(d, yScale) {
+            const yAxisMode = document.getElementById('y-axis-mode').value;
+            
+            switch(yAxisMode) {
+                case 'confidence':
+                    if (d.type === 'future') {
+                        // Map confidence (0.0-1.0) to y-axis range (-10 to +10)
+                        const confidence = d.confidence || 0.5;
+                        return yScale((confidence - 0.5) * 20);
+                    } else {
+                        // For past earnings, use price change
+                        const priceChange = d.priceChange || 0;
+                        return yScale(priceChange);
+                    }
+                    
+                case 'price-change':
+                    const priceChange = d.priceChange || 0;
+                    return yScale(priceChange);
+                    
+                case 'surprise-percent':
+                    if (d.type === 'past') {
+                        const surprise = d.surprise_percent || 0;
+                        return yScale(surprise);
+                    } else {
+                        // For future, use confidence scaled to surprise range
+                        const confidence = d.confidence || 0.5;
+                        return yScale((confidence - 0.5) * 20);
+                    }
+                    
+                case 'eps-growth':
+                    if (d.actualEPS && d.expectedEPS) {
+                        const growth = ((d.actualEPS - d.expectedEPS) / Math.abs(d.expectedEPS)) * 100;
+                        return yScale(growth);
+                    } else {
+                        return yScale(0);
+                    }
+                    
+                case 'market-cap':
+                    // Log scale for market cap positioning
+                    const marketCap = d.marketCap || 100;
+                    const logPosition = Math.log10(marketCap / 100) * 5; // Scale to -10 to +10 range
+                    return yScale(Math.max(-10, Math.min(10, logPosition)));
+                    
+                default:
+                    return yScale(0);
+            }
+        }
+
         // Initialize timeline with real data
         async function initializeTimeline() {
             const svg = d3.select('#timeline');
@@ -1211,27 +1381,17 @@
                     .enter()
                     .append('circle')
                     .attr('class', d => `earnings-icon ${d.type}-icon`)
+                    .attr('data-symbol', d => d.symbol)
                     .attr('cx', d => xScale(d.date))
                     .attr('cy', d => {
-                        if (d.type === 'past') {
-                            // Use real price change if available
-                            const priceChange = d.priceChange || (d.eps && d.epsEstimate ? 
-                                ((d.eps - d.epsEstimate) / d.epsEstimate * 100) : 0);
-                            return yScale(priceChange);
-                        } else {
-                            // Use confidence score for future earnings y-axis positioning
-                            // Map confidence (0.0-1.0) to y-axis range (-10 to +10)
-                            const confidence = d.confidence || 0.5;
-                            const confidencePosition = (confidence - 0.5) * 20; // -10 to +10 range
-                            return yScale(confidencePosition);
-                        }
+                        return getYPosition(d, yScale);
                     })
                     .attr('r', d => {
                         const sizeMode = document.getElementById('icon-size').value;
                         switch(sizeMode) {
-                            case 'market-cap': return Math.sqrt(d.marketCap || 1000) / 10;
-                            case 'volume': return Math.sqrt(d.volume || 1000000) / 1000;
-                            default: return 6;
+                            case 'market-cap': return (Math.sqrt(d.marketCap || 1000) / 10) * 3;
+                            case 'volume': return (Math.sqrt(d.volume || 1000000) / 1000) * 3;
+                            default: return 18; // 6 * 3 = 18
                         }
                     })
                     .attr('fill', d => {
@@ -1254,18 +1414,43 @@
                     .on('mouseout', hideTooltip)
                     .on('click', pinInfo);
                 
-                // Add axis
-                const xAxis = d3.axisBottom(xScale);
+                // Add axes
+                const xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat('%b %Y'));
                 svg.append('g')
+                    .attr('class', 'x-axis')
                     .attr('transform', `translate(0, ${height - 80})`)
                     .call(xAxis)
                     .attr('color', '#666');
                 
                 const yAxis = d3.axisLeft(yScale);
                 svg.append('g')
+                    .attr('class', 'y-axis')
                     .attr('transform', 'translate(40, 0)')
                     .call(yAxis)
                     .attr('color', '#666');
+                
+                // Add axis labels
+                svg.append('text')
+                    .attr('class', 'axis-label')
+                    .attr('transform', 'rotate(-90)')
+                    .attr('y', 15)
+                    .attr('x', -(height / 2))
+                    .style('text-anchor', 'middle')
+                    .style('fill', '#666')
+                    .style('font-size', '12px')
+                    .text(getYAxisLabel());
+                
+                svg.append('text')
+                    .attr('class', 'axis-label')
+                    .attr('x', width / 2)
+                    .attr('y', height - 40)
+                    .style('text-anchor', 'middle')
+                    .style('fill', '#666')
+                    .style('font-size', '12px')
+                    .text('Earnings Date');
+                
+                // Add zoom functionality
+                addZoomPan(svg, xScale, yScale, data);
                     
                 // Update ticker with real data after timeline loads
                 await updateTickerWithRealData();
@@ -1305,7 +1490,8 @@
                     Result: <strong>${d.beat_miss_meet || 'N/A'}</strong><br>
                     Actual EPS: $${d.actualEPS !== null ? d.actualEPS.toFixed(2) : 'N/A'}<br>
                     Expected EPS: $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}<br>
-                    Surprise: ${d.surprise_percent !== null ? (d.surprise_percent > 0 ? '+' : '') + d.surprise_percent.toFixed(1) + '%' : 'N/A'}
+                    Surprise: ${d.surprise_percent !== null ? (d.surprise_percent > 0 ? '+' : '') + d.surprise_percent.toFixed(1) + '%' : 'N/A'}<br>
+                    <a href="${d.source_url || '#'}" target="_blank" style="color: #64ffda; font-size: 11px;">📊 Data Source</a>
                 `;
             } else if (d.type === 'future') {
                 const expectation = d.analystExpectation || 'meet';
@@ -1315,7 +1501,8 @@
                     Confidence: ${(d.confidence * 100).toFixed(1)}%<br>
                     Expected EPS: $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}<br>
                     Consensus: ${d.consensusRating || 'N/A'}<br>
-                    Timing: ${d.announcement_time || 'N/A'}
+                    Timing: ${d.announcement_time || 'N/A'}<br>
+                    <a href="${d.source_url || '#'}" target="_blank" style="color: #64ffda; font-size: 11px;">📊 Data Source</a>
                 `;
             } else {
                 // Fallback for any undefined type
@@ -1377,6 +1564,11 @@
                 `;
             }
             
+            // Add data source link for both past and future earnings
+            content += `
+                <p><a href="${d.source_url || '#'}" target="_blank" style="color: #64ffda; text-decoration: none;">📊 Data Source</a></p>
+            `;
+            
             pinned.innerHTML = content;
             document.body.appendChild(pinned);
             
@@ -1411,6 +1603,130 @@
             function closeDragElement() {
                 document.onmouseup = null;
                 document.onmousemove = null;
+            }
+        }
+
+        // Company Search Functions
+        function setupCompanySearch() {
+            const searchInput = document.getElementById('company-search');
+            const autocompletePanel = document.getElementById('autocomplete-panel');
+            
+            if (!searchInput || !autocompletePanel) {
+                console.warn('Company search elements not found');
+                return;
+            }
+            
+            // Variables to track current state
+            let currentHighlightedCompanies = [];
+            
+            // Handle input changes
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.trim().toUpperCase();
+                
+                if (searchTerm.length === 0) {
+                    hideAutocompletePanel();
+                    clearHighlights();
+                    return;
+                }
+                
+                // Filter companies that match the search term
+                const matchingCompanies = sp500CompaniesData.filter(company => 
+                    company.symbol.toUpperCase().startsWith(searchTerm)
+                ).slice(0, 10); // Limit to 10 results
+                
+                if (matchingCompanies.length > 0) {
+                    showAutocompletePanel(matchingCompanies);
+                    highlightMatchingEarnings(matchingCompanies.map(c => c.symbol));
+                } else {
+                    hideAutocompletePanel();
+                    clearHighlights();
+                }
+            });
+            
+            // Handle click outside to close
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !autocompletePanel.contains(e.target)) {
+                    hideAutocompletePanel();
+                    clearHighlights();
+                }
+            });
+            
+            // Handle escape key
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    hideAutocompletePanel();
+                    clearHighlights();
+                    searchInput.blur();
+                }
+            });
+            
+            function showAutocompletePanel(companies) {
+                autocompletePanel.innerHTML = '';
+                
+                companies.forEach(company => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    
+                    const symbol = company.symbol || 'N/A';
+                    const name = company.company_name || 'Unknown Company';
+                    const sector = company.gics_sector || 'Unknown Sector';
+                    const subIndustry = company.gics_sub_industry || 'Unknown Sub-Industry';
+                    
+                    item.innerHTML = `
+                        <div class="autocomplete-symbol">${symbol}</div>
+                        <div class="autocomplete-name">${name}</div>
+                        <div class="autocomplete-sector">${sector} / ${subIndustry}</div>
+                    `;
+                    
+                    // Handle click on autocomplete item
+                    item.addEventListener('click', function() {
+                        searchInput.value = symbol;
+                        hideAutocompletePanel();
+                        // Keep highlighting the selected company
+                        highlightMatchingEarnings([symbol]);
+                    });
+                    
+                    autocompletePanel.appendChild(item);
+                });
+                
+                autocompletePanel.style.display = 'block';
+            }
+            
+            function hideAutocompletePanel() {
+                autocompletePanel.style.display = 'none';
+            }
+            
+            function highlightMatchingEarnings(symbols) {
+                // Clear previous highlights
+                clearHighlights();
+                
+                // Store current highlighted companies
+                currentHighlightedCompanies = symbols;
+                
+                // Find and highlight matching earnings icons
+                const timelineSvg = document.querySelector('#timeline');
+                if (!timelineSvg) return;
+                
+                symbols.forEach(symbol => {
+                    const earningsIcons = timelineSvg.querySelectorAll(`circle[data-symbol="${symbol}"]`);
+                    earningsIcons.forEach(icon => {
+                        icon.classList.add('highlighted');
+                        // Bring highlighted icons to front by moving them to end of parent
+                        icon.parentNode.appendChild(icon);
+                    });
+                });
+            }
+            
+            function clearHighlights() {
+                const timelineSvg = document.querySelector('#timeline');
+                if (!timelineSvg) return;
+                
+                const highlightedIcons = timelineSvg.querySelectorAll('.highlighted');
+                highlightedIcons.forEach(icon => {
+                    icon.classList.remove('highlighted');
+                });
+                
+                currentHighlightedCompanies = [];
             }
         }
 
@@ -1870,6 +2186,13 @@
             d3.select('#timeline').selectAll('*').remove();
             initializeTimeline();
         });
+        
+        // Y-axis mode change handler
+        document.getElementById('y-axis-mode').addEventListener('change', function() {
+            // Redraw timeline with new y-axis positioning
+            d3.select('#timeline').selectAll('*').remove();
+            initializeTimeline();
+        });
 
         // Color scheme change handler
         document.getElementById('color-scheme').addEventListener('change', function() {
@@ -1904,17 +2227,36 @@
             };
         }
 
-        // Timeline zoom and pan functionality
-        function addZoomPan() {
-            const svg = d3.select('#timeline');
+        // Timeline zoom and pan functionality with proper axis scaling
+        function addZoomPan(svg, xScale, yScale, data) {
+            // Create zoom behavior
             const zoom = d3.zoom()
-                .scaleExtent([0.1, 10])
+                .scaleExtent([0.5, 10])  // Allow zooming from 0.5x to 10x
                 .on('zoom', function(event) {
                     const { transform } = event;
+                    
+                    // Create new scaled x-axis (only zoom on x-axis, keep y-axis fixed)
+                    const newXScale = transform.rescaleX(xScale);
+                    
+                    // Update earnings icons with new x positions and recalculate y positions
                     svg.selectAll('.earnings-icon')
-                        .attr('transform', transform);
-                    svg.selectAll('.axis')
-                        .attr('transform', transform);
+                        .attr('cx', d => newXScale(d.date))
+                        .attr('cy', d => getYPosition(d, yScale));
+                    
+                    // Update current date line position
+                    const now = new Date();
+                    svg.selectAll('.current-date-line')
+                        .attr('x1', newXScale(now))
+                        .attr('x2', newXScale(now));
+                    
+                    // Update x-axis
+                    svg.select('.x-axis')
+                        .call(d3.axisBottom(newXScale).tickFormat(d3.timeFormat('%b %Y')));
+                    
+                    // Update y-axis label if needed
+                    svg.selectAll('.axis-label')
+                        .filter(function() { return d3.select(this).attr('transform') === 'rotate(-90)'; })
+                        .text(getYAxisLabel());
                 });
             
             svg.call(zoom);
@@ -2067,8 +2409,10 @@
             // Update ticker (will use real data if available)
             updateTicker();
             
-            // Add zoom and pan after initialization
-            setTimeout(addZoomPan, 100);
+            // Zoom functionality is now added during timeline initialization
+            
+            // Setup company search autocomplete
+            setupCompanySearch();
             
             // Setup chat input and send button event listeners
             const chatInput = document.getElementById('chat-input');
