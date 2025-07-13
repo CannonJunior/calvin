@@ -995,16 +995,53 @@
         // To use real market data, sign up for free API keys:
         // 1. Alpha Vantage: https://www.alphavantage.co/support/#api-key (25 requests/day free)
         // 2. Finnhub: https://finnhub.io/register (60 requests/minute free)
+        // 3. Financial Modeling Prep: https://financialmodelingprep.com/developer/docs (500MB/month free)
         // Replace 'demo' with your actual API keys below
         
-        const API_CONFIG = {
-            ALPHA_VANTAGE_KEY: 'demo', // Replace with your Alpha Vantage API key
-            FINNHUB_KEY: 'demo', // Replace with your Finnhub API key
-            BASE_URL_AV: 'https://www.alphavantage.co/query',
-            BASE_URL_FH: 'https://finnhub.io/api/v1',
-            SP500_API: 'http://localhost:5001/api',  // Local S&P 500 API
-            EARNINGS_API: 'http://localhost:5002/api'  // PostgreSQL Earnings API
-        };
+        // API Configuration - loaded from external config file
+        let API_CONFIG = {};
+
+        // Load configuration from external file
+        async function loadConfig() {
+            try {
+                const response = await fetch('./config.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load config: ${response.status}`);
+                }
+                const config = await response.json();
+                
+                API_CONFIG = {
+                    ALPHA_VANTAGE_KEY: config.api_keys.alpha_vantage,
+                    FINNHUB_KEY: config.api_keys.finnhub,
+                    FMP_KEY: config.api_keys.financial_modeling_prep,
+                    BASE_URL_AV: config.api_endpoints.alpha_vantage_base,
+                    BASE_URL_FH: config.api_endpoints.finnhub_base,
+                    BASE_URL_FMP: config.api_endpoints.fmp_base,
+                    SP500_API: config.api_endpoints.sp500_api,
+                    EARNINGS_API: config.api_endpoints.earnings_api
+                };
+                
+                console.log('✅ Configuration loaded successfully');
+                return true;
+            } catch (error) {
+                console.error('❌ Failed to load configuration:', error);
+                console.log('🔄 Falling back to demo configuration...');
+                
+                // Fallback configuration
+                API_CONFIG = {
+                    ALPHA_VANTAGE_KEY: 'demo',
+                    FINNHUB_KEY: 'demo',
+                    FMP_KEY: 'demo',
+                    BASE_URL_AV: 'https://www.alphavantage.co/query',
+                    BASE_URL_FH: 'https://finnhub.io/api/v1',
+                    BASE_URL_FMP: 'https://financialmodelingprep.com/api/v3',
+                    SP500_API: 'http://localhost:5001/api',
+                    EARNINGS_API: 'http://localhost:5002/api'
+                };
+                
+                return false;
+            }
+        }
 
         // S&P 500 companies data (loaded from API)
         let sp500Companies = [];
@@ -1047,8 +1084,8 @@
         // Fetch individual stock data
         async function fetchStockData(symbol) {
             try {
-                // Use Alpha Vantage GLOBAL_QUOTE for current price data
-                const url = `${API_CONFIG.BASE_URL_AV}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_CONFIG.ALPHA_VANTAGE_KEY}`;
+                // Use Financial Modeling Prep for current price data
+                const url = `${API_CONFIG.BASE_URL_FMP}/quote/${symbol}?apikey=${API_CONFIG.FMP_KEY}`;
                 
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -1056,27 +1093,103 @@
                 }
                 
                 const data = await response.json();
-                const quote = data['Global Quote'];
+                const quote = data[0];
                 
-                if (!quote || Object.keys(quote).length === 0) {
+                if (!quote) {
                     console.warn(`No data returned for ${symbol}`);
                     return null;
                 }
                 
                 return {
-                    symbol: quote['01. symbol'],
-                    price: parseFloat(quote['05. price']),
-                    change: parseFloat(quote['09. change']),
-                    changePercent: parseFloat(quote['10. change percent'].replace('%', '')),
-                    volume: parseInt(quote['06. volume']),
-                    previousClose: parseFloat(quote['08. previous close']),
-                    high: parseFloat(quote['03. high']),
-                    low: parseFloat(quote['04. low']),
-                    lastUpdated: quote['07. latest trading day']
+                    symbol: quote.symbol,
+                    price: parseFloat(quote.price),
+                    change: parseFloat(quote.change),
+                    changePercent: parseFloat(quote.changesPercentage),
+                    volume: parseInt(quote.volume),
+                    previousClose: parseFloat(quote.previousClose),
+                    high: parseFloat(quote.dayHigh),
+                    low: parseFloat(quote.dayLow),
+                    marketCap: parseFloat(quote.marketCap),
+                    lastUpdated: quote.timestamp,
+                    dataSource: url // Include the actual API URL used
                 };
             } catch (error) {
                 console.error(`Error fetching data for ${symbol}:`, error);
                 return null;
+            }
+        }
+
+        // Fetch historical market cap for a specific date
+        async function fetchHistoricalMarketCap(symbol, date) {
+            try {
+                const dateStr = date.toISOString().split('T')[0];
+                const url = `${API_CONFIG.BASE_URL_FMP}/historical-market-capitalization/${symbol}?from=${dateStr}&to=${dateStr}&apikey=${API_CONFIG.FMP_KEY}`;
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    return {
+                        marketCap: parseFloat(data[0].marketCap) / 1000000000, // Convert to billions
+                        dataSource: url
+                    };
+                }
+                
+                return { marketCap: null, dataSource: url };
+            } catch (error) {
+                console.error(`Error fetching historical market cap for ${symbol} on ${date}:`, error);
+                return { marketCap: null, dataSource: `${API_CONFIG.BASE_URL_FMP}/historical-market-capitalization/${symbol}` };
+            }
+        }
+
+        // Fetch historical price data for earnings date analysis
+        async function fetchHistoricalPriceChange(symbol, earningsDate) {
+            try {
+                const earningsDateStr = earningsDate.toISOString().split('T')[0];
+                const nextDay = new Date(earningsDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                const nextDayStr = nextDay.toISOString().split('T')[0];
+                
+                // Get price data for the earnings date and the next trading day
+                const url = `${API_CONFIG.BASE_URL_FMP}/historical-price-full/${symbol}?from=${earningsDateStr}&to=${nextDayStr}&apikey=${API_CONFIG.FMP_KEY}`;
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const historical = data.historical;
+                
+                if (historical && historical.length >= 2) {
+                    const earningsPrice = parseFloat(historical[1].close); // Day of earnings
+                    const nextDayPrice = parseFloat(historical[0].close); // Day after earnings
+                    const priceChange = ((nextDayPrice - earningsPrice) / earningsPrice) * 100;
+                    
+                    return {
+                        priceChange: priceChange,
+                        earningsPrice: earningsPrice,
+                        nextDayPrice: nextDayPrice,
+                        dataSource: url
+                    };
+                } else if (historical && historical.length === 1) {
+                    // Only one day of data available
+                    return {
+                        priceChange: 0,
+                        earningsPrice: parseFloat(historical[0].close),
+                        nextDayPrice: parseFloat(historical[0].close),
+                        dataSource: url
+                    };
+                }
+                
+                return { priceChange: null, dataSource: url };
+            } catch (error) {
+                console.error(`Error fetching historical price change for ${symbol} on ${earningsDate}:`, error);
+                return { priceChange: null, dataSource: `${API_CONFIG.BASE_URL_FMP}/historical-price-full/${symbol}` };
             }
         }
 
@@ -1120,7 +1233,7 @@
             }
         }
 
-        // Fetch real earnings data from PostgreSQL
+        // Fetch real earnings data from PostgreSQL with enhanced historical data
         async function fetchRealEarningsData() {
             try {
                 console.log('📊 Fetching real earnings data from PostgreSQL...');
@@ -1134,35 +1247,56 @@
                 const timelineData = data.timeline_data || [];
                 
                 console.log(`✅ Loaded ${timelineData.length} real earnings events from database`);
+                console.log('📈 Fetching historical market data for each earnings event...');
                 
-                // Convert API data to timeline format
-                const processedData = timelineData.map(item => ({
-                    symbol: item.symbol,
-                    company_name: item.company_name,
-                    date: new Date(item.date),
-                    type: item.type,
-                    sector: item.sector,
+                // Enhance earnings data with real historical market cap and price changes
+                const enhancedData = await Promise.all(timelineData.map(async (item) => {
+                    const earningsDate = new Date(item.date);
+                    const symbol = item.symbol;
                     
-                    // Price and prediction data
-                    priceChange: parseFloat(item.priceChange) || 0,
-                    predictionAccuracy: parseFloat(item.predictionAccuracy) || 0.5,
-                    marketCap: parseFloat(item.marketCap) || 1000,
-                    volume: parseInt(item.volume) || 50000000,
+                    // Fetch historical market cap for the earnings date
+                    const marketCapData = await fetchHistoricalMarketCap(symbol, earningsDate);
                     
-                    // Earnings specific data
-                    actualEPS: parseFloat(item.actualEPS) || null,
-                    expectedEPS: parseFloat(item.expectedEPS) || null,
-                    beat_miss_meet: item.beat_miss_meet,
-                    surprise_percent: parseFloat(item.surprise_percent) || null,
+                    // Fetch price change data for past earnings only
+                    let priceChangeData = { priceChange: null, dataSource: null };
+                    if (item.type === 'past') {
+                        priceChangeData = await fetchHistoricalPriceChange(symbol, earningsDate);
+                    }
                     
-                    // Future earnings
-                    analystExpectation: item.analystExpectation || (item.type === 'future' ? 'meet' : null),
-                    confidence: parseFloat(item.confidence) || 0.5,
-                    consensusRating: item.consensusRating,
-                    announcement_time: item.announcement_time
+                    return {
+                        symbol: item.symbol,
+                        company_name: item.company_name,
+                        date: earningsDate,
+                        type: item.type,
+                        sector: item.sector,
+                        
+                        // Enhanced price and prediction data with real API data
+                        priceChange: priceChangeData.priceChange !== null ? priceChangeData.priceChange : (parseFloat(item.priceChange) || 0),
+                        predictionAccuracy: parseFloat(item.predictionAccuracy) || 0.5,
+                        marketCap: marketCapData.marketCap !== null ? marketCapData.marketCap : (parseFloat(item.marketCap) || 1000),
+                        volume: parseInt(item.volume) || 50000000,
+                        
+                        // Earnings specific data
+                        actualEPS: parseFloat(item.actualEPS) || null,
+                        expectedEPS: parseFloat(item.expectedEPS) || null,
+                        beat_miss_meet: item.beat_miss_meet,
+                        surprise_percent: parseFloat(item.surprise_percent) || null,
+                        
+                        // Future earnings
+                        analystExpectation: item.analystExpectation || (item.type === 'future' ? 'meet' : null),
+                        confidence: parseFloat(item.confidence) || 0.5,
+                        consensusRating: item.consensusRating,
+                        announcement_time: item.announcement_time,
+                        
+                        // Data source tracking - use stored source URL from database first
+                        source_url: item.source_url || marketCapData.dataSource || priceChangeData.dataSource,
+                        marketCapDataSource: marketCapData.dataSource,
+                        priceChangeDataSource: priceChangeData.dataSource
+                    };
                 }));
                 
-                return processedData.sort((a, b) => a.date - b.date);
+                console.log('✅ Enhanced earnings data with real historical market data');
+                return enhancedData.sort((a, b) => a.date - b.date);
                 
             } catch (error) {
                 console.error('❌ Error fetching real earnings data:', error);
@@ -1217,7 +1351,9 @@
                         volume: Math.random() * 100000000 + 1000000,
                         sector: getSectorForSymbol(symbol),
                         actualEPS: (Math.random() * 5 + 0.5).toFixed(2),
-                        expectedEPS: (Math.random() * 5 + 0.5).toFixed(2)
+                        expectedEPS: (Math.random() * 5 + 0.5).toFixed(2),
+                        marketCapDataSource: `${API_CONFIG.BASE_URL_FMP}/historical-market-capitalization/${symbol}?apikey=${API_CONFIG.FMP_KEY}`,
+                        priceChangeDataSource: `${API_CONFIG.BASE_URL_FMP}/historical-price-full/${symbol}?apikey=${API_CONFIG.FMP_KEY}`
                     });
                 }
                 
@@ -1236,7 +1372,9 @@
                         volume: Math.random() * 100000000 + 1000000,
                         sector: getSectorForSymbol(symbol),
                         expectedEPS: (Math.random() * 5 + 0.5).toFixed(2),
-                        consensusRating: ['Buy', 'Hold', 'Sell'][Math.floor(Math.random() * 3)]
+                        consensusRating: ['Buy', 'Hold', 'Sell'][Math.floor(Math.random() * 3)],
+                        marketCapDataSource: `${API_CONFIG.BASE_URL_FMP}/historical-market-capitalization/${symbol}?apikey=${API_CONFIG.FMP_KEY}`,
+                        priceChangeDataSource: null // Future earnings don't have price change data yet
                     });
                 }
             });
@@ -1491,7 +1629,7 @@
                     Actual EPS: $${d.actualEPS !== null ? d.actualEPS.toFixed(2) : 'N/A'}<br>
                     Expected EPS: $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}<br>
                     Surprise: ${d.surprise_percent !== null ? (d.surprise_percent > 0 ? '+' : '') + d.surprise_percent.toFixed(1) + '%' : 'N/A'}<br>
-                    <a href="${d.source_url || '#'}" target="_blank" style="color: #64ffda; font-size: 11px;">📊 Data Source</a>
+                    <a href="${d.source_url || d.marketCapDataSource || d.priceChangeDataSource || '#'}" target="_blank" style="color: #64ffda; font-size: 11px;">📊 Data Source</a>
                 `;
             } else if (d.type === 'future') {
                 const expectation = d.analystExpectation || 'meet';
@@ -1502,7 +1640,7 @@
                     Expected EPS: $${d.expectedEPS !== null ? d.expectedEPS.toFixed(2) : 'N/A'}<br>
                     Consensus: ${d.consensusRating || 'N/A'}<br>
                     Timing: ${d.announcement_time || 'N/A'}<br>
-                    <a href="${d.source_url || '#'}" target="_blank" style="color: #64ffda; font-size: 11px;">📊 Data Source</a>
+                    <a href="${d.source_url || d.marketCapDataSource || d.priceChangeDataSource || '#'}" target="_blank" style="color: #64ffda; font-size: 11px;">📊 Data Source</a>
                 `;
             } else {
                 // Fallback for any undefined type
@@ -1566,7 +1704,7 @@
             
             // Add data source link for both past and future earnings
             content += `
-                <p><a href="${d.source_url || '#'}" target="_blank" style="color: #64ffda; text-decoration: none;">📊 Data Source</a></p>
+                <p><a href="${d.source_url || d.marketCapDataSource || d.priceChangeDataSource || '#'}" target="_blank" style="color: #64ffda; text-decoration: none;">📊 Data Source</a></p>
             `;
             
             pinned.innerHTML = content;
@@ -2397,6 +2535,9 @@
 
         // Initialize the dashboard
         document.addEventListener('DOMContentLoaded', async function() {
+            // Load configuration first (API keys and endpoints)
+            await loadConfig();
+            
             // Load S&P 500 data first
             await loadSP500Data();
             

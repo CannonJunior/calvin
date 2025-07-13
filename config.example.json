@@ -1,0 +1,14 @@
+{
+  "api_keys": {
+    "alpha_vantage": "YOUR_ALPHA_VANTAGE_API_KEY_HERE",
+    "finnhub": "YOUR_FINNHUB_API_KEY_HERE", 
+    "financial_modeling_prep": "YOUR_FMP_API_KEY_HERE"
+  },
+  "api_endpoints": {
+    "alpha_vantage_base": "https://www.alphavantage.co/query",
+    "finnhub_base": "https://finnhub.io/api/v1",
+    "fmp_base": "https://financialmodelingprep.com/api/v3",
+    "sp500_api": "http://localhost:5001/api",
+    "earnings_api": "http://localhost:5002/api"
+  }
+}
