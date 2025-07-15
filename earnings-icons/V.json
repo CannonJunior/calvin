@@ -1,0 +1,55 @@
+{
+  "symbol": "V",
+  "company_name": "Visa Inc.",
+  "sector": "Financials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T19:01:26.115468",
+  "earnings_data": [
+    {
+      "symbol": "V",
+      "earnings_date": "2025-10-16",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 3.27,
+      "consensus_rating": "Sell",
+      "num_analysts": 11,
+      "confidence_score": 0.8672145840858805,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "V",
+      "earnings_date": "2025-12-30",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 3.13,
+      "consensus_rating": "Buy",
+      "num_analysts": 16,
+      "confidence_score": 0.6170440802933678,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "V",
+      "earnings_date": "2026-03-27",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.77,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.787077876540396,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "V",
+      "earnings_date": "2026-07-14",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.71,
+      "consensus_rating": "Hold",
+      "num_analysts": 22,
+      "confidence_score": 0.7310931210257743,
+      "announcement_time": "AMC"
+    }
+  ]
+}

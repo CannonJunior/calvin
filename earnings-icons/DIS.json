@@ -1,0 +1,55 @@
+{
+  "symbol": "DIS",
+  "company_name": "Walt Disney Company (The)",
+  "sector": "Communication Services",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T18:55:50.715754",
+  "earnings_data": [
+    {
+      "symbol": "DIS",
+      "earnings_date": "2025-10-24",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.56,
+      "consensus_rating": "Hold",
+      "num_analysts": 16,
+      "confidence_score": 0.8323317432233932,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "DIS",
+      "earnings_date": "2026-01-01",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.66,
+      "consensus_rating": "Buy",
+      "num_analysts": 20,
+      "confidence_score": 0.6644141104784399,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "DIS",
+      "earnings_date": "2026-04-05",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.53,
+      "consensus_rating": "Hold",
+      "num_analysts": 20,
+      "confidence_score": 0.740607693612443,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "DIS",
+      "earnings_date": "2026-06-29",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.61,
+      "consensus_rating": "Buy",
+      "num_analysts": 9,
+      "confidence_score": 0.6298751446054834,
+      "announcement_time": "BMO"
+    }
+  ]
+}

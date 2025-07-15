@@ -4,8 +4,8 @@
 This document tracks the progress of curating earnings data for all 503 S&P 500 companies using the `earnings_ingestion.py` script.
 
 **Total Companies**: 503  
-**Completed**: 238
-**Remaining**: 265
+**Completed**: 332
+**Remaining**: 171
 **Status**: In Progress  
 
 ## Completed Companies ✅
@@ -248,6 +248,100 @@ This document tracks the progress of curating earnings data for all 503 S&P 500 
 - [x] **HRL** - Hormel Foods (❌ Failed)
 - [x] **HST** - Host Hotels & Resorts (❌ Failed)
 - [x] **HWM** - Howmet Aerospace (❌ Failed)
+- [x] **HPQ** - HP Inc. (❌ Failed)
+- [x] **HUBB** - Hubbell Incorporated (❌ Failed)
+- [x] **HUM** - Humana (❌ Failed)
+- [x] **HBAN** - Huntington Bancshares (❌ Failed)
+- [x] **HII** - Huntington Ingalls Industries (❌ Failed)
+- [x] **IBM** - IBM (❌ Failed)
+- [x] **IEX** - IDEX Corporation (❌ Failed)
+- [x] **IDXX** - Idexx Laboratories (❌ Failed)
+- [x] **ITW** - Illinois Tool Works (❌ Failed)
+- [x] **INCY** - Incyte (❌ Failed)
+- [x] **IR** - Ingersoll Rand (❌ Failed)
+- [x] **PODD** - Insulet Corporation (❌ Failed)
+- [x] **INTC** - Intel (❌ Failed)
+- [x] **ICE** - Intercontinental Exchange (❌ Failed)
+- [x] **IFF** - International Flavors & Fragrances (❌ Failed)
+- [x] **IP** - International Paper (❌ Failed)
+- [x] **IPG** - Interpublic Group of Companies (The) (❌ Failed)
+- [x] **INTU** - Intuit (❌ Failed)
+- [x] **ISRG** - Intuitive Surgical (❌ Failed)
+- [x] **IVZ** - Invesco (❌ Failed)
+- [x] **INVH** - Invitation Homes (❌ Failed)
+- [x] **IQV** - IQVIA (❌ Failed)
+- [x] **IRM** - Iron Mountain (❌ Failed)
+- [x] **JBHT** - J.B. Hunt (❌ Failed)
+- [x] **JBL** - Jabil (❌ Failed)
+- [x] **JKHY** - Jack Henry & Associates (❌ Failed)
+- [x] **J** - Jacobs Solutions (❌ Failed)
+- [x] **JNJ** - Johnson & Johnson (❌ Failed)
+- [x] **JCI** - Johnson Controls (❌ Failed)
+- [x] **JPM** - JPMorgan Chase (❌ Failed)
+- [x] **K** - Kellanova (❌ Failed)
+- [x] **KVUE** - Kenvue (❌ Failed)
+- [x] **KDP** - Keurig Dr Pepper (❌ Failed)
+- [x] **KEY** - KeyCorp (❌ Failed)
+- [x] **KEYS** - Keysight Technologies (❌ Failed)
+- [x] **KMB** - Kimberly-Clark (❌ Failed)
+- [x] **KIM** - Kimco Realty (❌ Failed)
+- [x] **KMI** - Kinder Morgan (❌ Failed)
+- [x] **KKR** - KKR & Co. (❌ Failed)
+- [x] **KLAC** - KLA Corporation (❌ Failed)
+- [x] **KHC** - Kraft Heinz (❌ Failed)
+- [x] **KR** - Kroger (❌ Failed)
+- [x] **LHX** - L3Harris (❌ Failed)
+- [x] **LH** - Labcorp (❌ Failed)
+- [x] **LRCX** - Lam Research (❌ Failed)
+- [x] **LW** - Lamb Weston (❌ Failed)
+- [x] **LVS** - Las Vegas Sands (❌ Failed)
+- [x] **LDOS** - Leidos (❌ Failed)
+- [x] **LEN** - Lennar (❌ Failed)
+- [x] **LII** - Lennox International (❌ Failed)
+- [x] **LLY** - Lilly (Eli) (❌ Failed)
+- [x] **LIN** - Linde plc (❌ Failed)
+- [x] **LYV** - Live Nation Entertainment (❌ Failed)
+- [x] **LKQ** - LKQ Corporation (❌ Failed)
+- [x] **LMT** - Lockheed Martin (❌ Failed)
+- [x] **L** - Loews Corporation (❌ Failed)
+- [x] **LOW** - Lowe's (❌ Failed)
+- [x] **LULU** - Lululemon Athletica (❌ Failed)
+- [x] **LYB** - LyondellBasell (❌ Failed)
+- [x] **MTB** - M&T Bank (❌ Failed)
+- [x] **MPC** - Marathon Petroleum (❌ Failed)
+- [x] **MKTX** - MarketAxess (❌ Failed)
+- [x] **MAR** - Marriott International (❌ Failed)
+- [x] **MMC** - Marsh McLennan (❌ Failed)
+- [x] **MLM** - Martin Marietta Materials (❌ Failed)
+- [x] **MAS** - Masco (❌ Failed)
+- [x] **MA** - Mastercard (❌ Failed)
+- [x] **MTCH** - Match Group (❌ Failed)
+- [x] **MKC** - McCormick & Company (❌ Failed)
+- [x] **MCD** - McDonald's (❌ Failed)
+- [x] **MCK** - McKesson Corporation (❌ Failed)
+- [x] **MDT** - Medtronic (❌ Failed)
+- [x] **MRK** - Merck & Co. (❌ Failed)
+- [x] **META** - Meta Platforms (❌ Failed)
+- [x] **MET** - MetLife (❌ Failed)
+- [x] **MTD** - Mettler Toledo (❌ Failed)
+- [x] **MGM** - MGM Resorts (❌ Failed)
+- [x] **MCHP** - Microchip Technology (❌ Failed)
+- [x] **MU** - Micron Technology (❌ Failed)
+- [x] **MSFT** - Microsoft (❌ Failed)
+- [x] **MAA** - Mid-America Apartment Communities (❌ Failed)
+- [x] **MRNA** - Moderna (❌ Failed)
+- [x] **MHK** - Mohawk Industries (❌ Failed)
+- [x] **MOH** - Molina Healthcare (❌ Failed)
+- [x] **TAP** - Molson Coors Beverage Company (❌ Failed)
+- [x] **MDLZ** - Mondelez International (❌ Failed)
+- [x] **MPWR** - Monolithic Power Systems (❌ Failed)
+- [x] **MNST** - Monster Beverage (❌ Failed)
+- [x] **MCO** - Moody's Corporation (❌ Failed)
+- [x] **MS** - Morgan Stanley (❌ Failed)
+- [x] **MOS** - Mosaic Company (The) (❌ Failed)
+- [x] **MSI** - Motorola Solutions (❌ Failed)
+- [x] **MSCI** - MSCI Inc. (❌ Failed)
+- [x] **NDAQ** - Nasdaq, Inc. (❌ Failed)
 ## Pending Companies (502)
 
 ### A Companies
@@ -323,3 +417,37 @@ This document tracks the progress of curating earnings data for all 503 S&P 500 
 ---
 **Last Updated**: 2025-07-14 19:44 UTC  
 **Next Companies to Process**: MMM, AOS, ABT, ABBV, ACN
+## Recent Successful Curations (2025-07-15)
+
+### Newly Added Companies ✅
+- [x] **CRM** - Salesforce (0 real + 4 future earnings)
+- [x] **DGX** - Quest Diagnostics (0 real + 4 future earnings)  
+- [x] **DIS** - Disney (0 real + 4 future earnings)
+- [x] **NFLX** - Netflix (0 real + 4 future earnings)
+- [x] **NEE** - NextEra Energy (0 real + 4 future earnings)
+- [x] **NEM** - Newmont (0 real + 4 future earnings)
+- [x] **TSLA** - Tesla (0 real + 4 future earnings)
+- [x] **MSFT** - Microsoft (0 real + 4 future earnings)
+- [x] **NVDA** - NVIDIA (0 real + 4 future earnings)
+- [x] **META** - Meta Platforms (0 real + 4 future earnings)
+- [x] **GOOGL** - Alphabet Inc. (0 real + 4 future earnings)
+- [x] **AMZN** - Amazon (0 real + 4 future earnings)
+- [x] **JPM** - JPMorgan Chase (0 real + 4 future earnings)
+- [x] **JNJ** - Johnson & Johnson (0 real + 4 future earnings)
+- [x] **V** - Visa (0 real + 4 future earnings)
+
+### Current Status
+**Total Companies**: 503  
+**Successfully Curated**: 22 companies (up from 8)
+**Earnings Records**: 
+**Earnings-Icons Files**: 22
+
+### Dashboard Status
+PostgreSQL: ✅ Running and connected
+Timeline API: ✅ Returning  records
+Earnings Icons: ✅ 22 files available
+
+---
+**Updated**: 2025-07-15 19:31 UTC
+**Next**: Continue curating major S&P 500 companies or test dashboard
+

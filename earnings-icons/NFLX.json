@@ -1,0 +1,55 @@
+{
+  "symbol": "NFLX",
+  "company_name": "Netflix",
+  "sector": "Communication Services",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T18:55:55.174241",
+  "earnings_data": [
+    {
+      "symbol": "NFLX",
+      "earnings_date": "2025-09-29",
+      "quarter": 3,
+      "year": 2025,
+      "estimated_eps": 1.6,
+      "consensus_rating": "Buy",
+      "num_analysts": 12,
+      "confidence_score": 0.6952747286528556,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "NFLX",
+      "earnings_date": "2026-01-19",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.46,
+      "consensus_rating": "Sell",
+      "num_analysts": 15,
+      "confidence_score": 0.7266646474619234,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "NFLX",
+      "earnings_date": "2026-04-17",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.48,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.7954984956469016,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "NFLX",
+      "earnings_date": "2026-07-08",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.31,
+      "consensus_rating": "Sell",
+      "num_analysts": 22,
+      "confidence_score": 0.675538985540427,
+      "announcement_time": "BMO"
+    }
+  ]
+}

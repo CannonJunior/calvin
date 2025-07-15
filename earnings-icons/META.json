@@ -1,0 +1,55 @@
+{
+  "symbol": "META",
+  "company_name": "Meta Platforms",
+  "sector": "Communication Services",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T18:57:00.011407",
+  "earnings_data": [
+    {
+      "symbol": "META",
+      "earnings_date": "2025-10-27",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.46,
+      "consensus_rating": "Sell",
+      "num_analysts": 23,
+      "confidence_score": 0.717210809461845,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "META",
+      "earnings_date": "2026-01-21",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.41,
+      "consensus_rating": "Sell",
+      "num_analysts": 13,
+      "confidence_score": 0.8509361485294125,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "META",
+      "earnings_date": "2026-04-19",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.64,
+      "consensus_rating": "Hold",
+      "num_analysts": 19,
+      "confidence_score": 0.614307512554323,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "META",
+      "earnings_date": "2026-07-08",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.52,
+      "consensus_rating": "Sell",
+      "num_analysts": 12,
+      "confidence_score": 0.6798145686760949,
+      "announcement_time": "BMO"
+    }
+  ]
+}

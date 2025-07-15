@@ -1,0 +1,55 @@
+{
+  "symbol": "CRM",
+  "company_name": "Salesforce",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T18:55:46.181093",
+  "earnings_data": [
+    {
+      "symbol": "CRM",
+      "earnings_date": "2025-10-28",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.55,
+      "consensus_rating": "Hold",
+      "num_analysts": 16,
+      "confidence_score": 0.7828591168345282,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "CRM",
+      "earnings_date": "2026-01-08",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.6,
+      "consensus_rating": "Sell",
+      "num_analysts": 16,
+      "confidence_score": 0.6654666942842079,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "CRM",
+      "earnings_date": "2026-03-30",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.57,
+      "consensus_rating": "Buy",
+      "num_analysts": 20,
+      "confidence_score": 0.6677315617133542,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "CRM",
+      "earnings_date": "2026-07-25",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.6,
+      "consensus_rating": "Hold",
+      "num_analysts": 9,
+      "confidence_score": 0.8443259320621355,
+      "announcement_time": "BMO"
+    }
+  ]
+}

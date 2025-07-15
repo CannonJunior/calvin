@@ -239,7 +239,6 @@ class PostgresEarningsAPI:
                         END as timeline_y_value
                     FROM earnings e
                     JOIN companies c ON e.company_id = c.id
-                    WHERE e.source_url IS NOT NULL AND e.source_url != ''
                     ORDER BY e.earnings_date
                 """
                 

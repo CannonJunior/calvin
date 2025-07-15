@@ -1,0 +1,55 @@
+{
+  "symbol": "TSLA",
+  "company_name": "Tesla, Inc.",
+  "sector": "Consumer Discretionary",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T18:56:53.763409",
+  "earnings_data": [
+    {
+      "symbol": "TSLA",
+      "earnings_date": "2025-10-21",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.68,
+      "consensus_rating": "Hold",
+      "num_analysts": 19,
+      "confidence_score": 0.7093934774486375,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "TSLA",
+      "earnings_date": "2026-01-26",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.87,
+      "consensus_rating": "Buy",
+      "num_analysts": 9,
+      "confidence_score": 0.7625542405754896,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "TSLA",
+      "earnings_date": "2026-04-19",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.75,
+      "consensus_rating": "Buy",
+      "num_analysts": 19,
+      "confidence_score": 0.8803482881781475,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "TSLA",
+      "earnings_date": "2026-07-18",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.94,
+      "consensus_rating": "Sell",
+      "num_analysts": 20,
+      "confidence_score": 0.7486417225291132,
+      "announcement_time": "AMC"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "symbol": "JNJ",
+  "company_name": "Johnson & Johnson",
+  "sector": "Health Care",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T19:01:25.360262",
+  "earnings_data": [
+    {
+      "symbol": "JNJ",
+      "earnings_date": "2025-10-28",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.98,
+      "consensus_rating": "Buy",
+      "num_analysts": 11,
+      "confidence_score": 0.7871414741082003,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "JNJ",
+      "earnings_date": "2026-01-14",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.83,
+      "consensus_rating": "Hold",
+      "num_analysts": 16,
+      "confidence_score": 0.6798691491296411,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "JNJ",
+      "earnings_date": "2026-04-19",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.04,
+      "consensus_rating": "Buy",
+      "num_analysts": 25,
+      "confidence_score": 0.8834695553643592,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "JNJ",
+      "earnings_date": "2026-07-05",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.12,
+      "consensus_rating": "Hold",
+      "num_analysts": 11,
+      "confidence_score": 0.7100294074010136,
+      "announcement_time": "AMC"
+    }
+  ]
+}

@@ -1051,6 +1051,11 @@
         // Real data storage
         let realEarningsData = [];
         let realTickerData = {};
+        
+        // Global variables for D3 scales and data (for animations)
+        let timelineData = [];
+        let currentXScale = null;
+        let currentYScale = null;
 
         // Fetch real market data from Alpha Vantage
         async function fetchRealMarketData(symbols, maxSymbols = 10) {
@@ -1300,6 +1305,82 @@
                 
             } catch (error) {
                 console.error('❌ Error fetching real earnings data:', error);
+                console.log('🔄 Falling back to earnings-icons data...');
+                return await loadEarningsFromLocalFiles();
+            }
+        }
+
+        // Load earnings data from earnings-icons directory
+        async function loadEarningsFromLocalFiles() {
+            try {
+                console.log('📂 Loading earnings data from earnings-icons directory...');
+                
+                // Get known symbols from sp500Companies array
+                const symbols = sp500Companies.slice(0, 100).map(company => company.symbol);
+                const allEarningsData = [];
+                let loadedFiles = 0;
+                
+                // Load earnings data from each symbol file
+                for (const symbol of symbols) {
+                    try {
+                        const response = await fetch(`earnings-icons/${symbol}.json`);
+                        if (response.ok) {
+                            const iconData = await response.json();
+                            loadedFiles++;
+                            
+                            // Convert earnings_data to timeline format
+                            if (iconData.earnings_data && Array.isArray(iconData.earnings_data)) {
+                                iconData.earnings_data.forEach(earning => {
+                                    // Calculate market cap based on sector (rough estimates in billions)
+                                    let estimatedMarketCap = 50; // Default 50B
+                                    const sector = iconData.sector || 'Unknown';
+                                    if (sector.includes('Technology')) estimatedMarketCap = 100;
+                                    else if (sector.includes('Health Care')) estimatedMarketCap = 80;
+                                    else if (sector.includes('Financial')) estimatedMarketCap = 60;
+                                    else if (sector.includes('Consumer')) estimatedMarketCap = 40;
+                                    
+                                    allEarningsData.push({
+                                        symbol: earning.symbol || iconData.symbol,
+                                        company_name: iconData.company_name || earning.symbol,
+                                        date: new Date(earning.earnings_date),
+                                        type: 'future',
+                                        sector: iconData.sector || 'Unknown',
+                                        
+                                        // Use available data with sector-based estimates
+                                        priceChange: 0,
+                                        predictionAccuracy: earning.confidence_score || 0.5,
+                                        marketCap: estimatedMarketCap,
+                                        volume: 50000000,
+                                        
+                                        // Earnings specific data
+                                        actualEPS: null,
+                                        expectedEPS: parseFloat(earning.estimated_eps) || null,
+                                        beat_miss_meet: null,
+                                        surprise_percent: null,
+                                        
+                                        // Future earnings data from earnings-icons
+                                        analystExpectation: 'meet',
+                                        confidence: parseFloat(earning.confidence_score) || 0.5,
+                                        consensusRating: earning.consensus_rating || 'Hold',
+                                        announcement_time: earning.announcement_time || 'Unknown',
+                                        
+                                        // Data source
+                                        source_url: 'earnings-icons'
+                                    });
+                                });
+                            }
+                        }
+                    } catch (fileError) {
+                        // Silently continue if file doesn't exist
+                        continue;
+                    }
+                }
+                
+                console.log(`✅ Loaded ${allEarningsData.length} earnings events from ${loadedFiles} files`);
+                return allEarningsData.sort((a, b) => a.date - b.date);
+                
+            } catch (error) {
+                console.error('❌ Error loading earnings from local files:', error);
                 console.log('🔄 Falling back to mock data...');
                 return generateMockEarningsData();
             }
@@ -1493,6 +1574,9 @@
                 const data = await generateRealData();
                 const now = new Date();
                 
+                // Store data globally for animations
+                timelineData = data;
+                
                 // Remove loading indicator
                 svg.select('.loading-text').remove();
                 
@@ -1504,6 +1588,10 @@
                 const yScale = d3.scaleLinear()
                     .domain([-15, 15])
                     .range([height - 100, 100]);
+                
+                // Store scales globally for animations
+                currentXScale = xScale;
+                currentYScale = yScale;
                 
                 // Current date line
                 svg.append('line')
@@ -1605,6 +1693,9 @@
         function showTooltip(event, d) {
             const tooltip = document.getElementById('tooltip');
             
+            // Debug: Log the data object to console
+            console.log('Tooltip data:', d);
+            
             // Clear any previous content first
             tooltip.innerHTML = '';
             tooltip.style.display = 'block';
@@ -1613,10 +1704,10 @@
             
             // Build content from scratch for this specific data item
             let content = `
-                <strong>${d.symbol}</strong><br>
+                <strong>${d.symbol || 'Unknown'}</strong><br>
                 ${d.company_name ? d.company_name + '<br>' : ''}
-                Date: ${d.date.toLocaleDateString()}<br>
-                Sector: ${d.sector}<br>
+                Date: ${d.date ? d.date.toLocaleDateString() : 'Unknown'}<br>
+                Sector: ${d.sector || 'Unknown'}<br>
                 Market Cap: $${(d.marketCap || 1000).toFixed(1)}B<br>
             `;
             
@@ -2325,11 +2416,61 @@
             initializeTimeline();
         });
         
+        // Function to animate y-axis mode changes
+        function animateYAxisModeChange() {
+            const svg = d3.select('#timeline');
+            const container = document.querySelector('.timeline-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            // Check if we have data and scales
+            if (!timelineData.length || !currentXScale || !currentYScale) {
+                console.log('No data available for animation, skipping...');
+                return;
+            }
+            
+            // Create new y-scale for the selected mode
+            const newYScale = d3.scaleLinear()
+                .domain([-15, 15])
+                .range([height - 100, 100]);
+            
+            // Update global scale reference
+            currentYScale = newYScale;
+            
+            // Animate earnings icons to new y positions
+            svg.selectAll('.earnings-icon')
+                .data(timelineData)
+                .transition()
+                .duration(750)
+                .ease(d3.easeQuadInOut)
+                .attr('cy', d => getYPosition(d, newYScale));
+            
+            // Update y-axis with smooth transition
+            const yAxis = d3.axisLeft(newYScale);
+            svg.select('.y-axis')
+                .transition()
+                .duration(750)
+                .ease(d3.easeQuadInOut)
+                .call(yAxis);
+            
+            // Update y-axis label with fade transition
+            svg.select('.axis-label')
+                .filter(function() {
+                    return d3.select(this).attr('transform') === 'rotate(-90)';
+                })
+                .transition()
+                .duration(375)
+                .style('opacity', 0)
+                .transition()
+                .duration(375)
+                .style('opacity', 1)
+                .text(getYAxisLabel());
+        }
+
         // Y-axis mode change handler
         document.getElementById('y-axis-mode').addEventListener('change', function() {
-            // Redraw timeline with new y-axis positioning
-            d3.select('#timeline').selectAll('*').remove();
-            initializeTimeline();
+            // Animate to new y-axis positioning instead of redrawing
+            animateYAxisModeChange();
         });
 
         // Color scheme change handler
@@ -2379,7 +2520,7 @@
                     // Update earnings icons with new x positions and recalculate y positions
                     svg.selectAll('.earnings-icon')
                         .attr('cx', d => newXScale(d.date))
-                        .attr('cy', d => getYPosition(d, yScale));
+                        .attr('cy', d => getYPosition(d, currentYScale));
                     
                     // Update current date line position
                     const now = new Date();

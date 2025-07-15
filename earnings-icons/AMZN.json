@@ -1,0 +1,55 @@
+{
+  "symbol": "AMZN",
+  "company_name": "Amazon",
+  "sector": "Consumer Discretionary",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T18:57:01.211031",
+  "earnings_data": [
+    {
+      "symbol": "AMZN",
+      "earnings_date": "2025-10-14",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.61,
+      "consensus_rating": "Sell",
+      "num_analysts": 22,
+      "confidence_score": 0.6181561119367139,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "AMZN",
+      "earnings_date": "2026-01-22",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.91,
+      "consensus_rating": "Hold",
+      "num_analysts": 25,
+      "confidence_score": 0.8108088222315665,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "AMZN",
+      "earnings_date": "2026-04-10",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.94,
+      "consensus_rating": "Hold",
+      "num_analysts": 20,
+      "confidence_score": 0.7565148541537445,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "AMZN",
+      "earnings_date": "2026-07-25",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.68,
+      "consensus_rating": "Hold",
+      "num_analysts": 15,
+      "confidence_score": 0.7287536894991767,
+      "announcement_time": "AMC"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "symbol": "JPM",
+  "company_name": "JPMorgan Chase",
+  "sector": "Financials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T19:01:24.708773",
+  "earnings_data": [
+    {
+      "symbol": "JPM",
+      "earnings_date": "2025-10-02",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.87,
+      "consensus_rating": "Hold",
+      "num_analysts": 15,
+      "confidence_score": 0.6234323071624231,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "JPM",
+      "earnings_date": "2026-01-15",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.91,
+      "consensus_rating": "Buy",
+      "num_analysts": 8,
+      "confidence_score": 0.8450146638154978,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "JPM",
+      "earnings_date": "2026-04-15",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.69,
+      "consensus_rating": "Hold",
+      "num_analysts": 10,
+      "confidence_score": 0.737718225679456,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "JPM",
+      "earnings_date": "2026-07-07",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.71,
+      "consensus_rating": "Hold",
+      "num_analysts": 24,
+      "confidence_score": 0.8490227942866923,
+      "announcement_time": "BMO"
+    }
+  ]
+}

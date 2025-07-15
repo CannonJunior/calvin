@@ -1,0 +1,55 @@
+{
+  "symbol": "GOOGL",
+  "company_name": "Alphabet Inc. (Class A)",
+  "sector": "Communication Services",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T18:57:00.727100",
+  "earnings_data": [
+    {
+      "symbol": "GOOGL",
+      "earnings_date": "2025-10-01",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.74,
+      "consensus_rating": "Hold",
+      "num_analysts": 12,
+      "confidence_score": 0.6403575963727159,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "GOOGL",
+      "earnings_date": "2026-01-07",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.52,
+      "consensus_rating": "Buy",
+      "num_analysts": 12,
+      "confidence_score": 0.835995765598402,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "GOOGL",
+      "earnings_date": "2026-03-31",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.54,
+      "consensus_rating": "Sell",
+      "num_analysts": 24,
+      "confidence_score": 0.7497402315419948,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "GOOGL",
+      "earnings_date": "2026-07-24",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.57,
+      "consensus_rating": "Hold",
+      "num_analysts": 19,
+      "confidence_score": 0.8102711901520655,
+      "announcement_time": "BMO"
+    }
+  ]
+}

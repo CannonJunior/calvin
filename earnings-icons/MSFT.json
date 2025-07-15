@@ -1,0 +1,55 @@
+{
+  "symbol": "MSFT",
+  "company_name": "Microsoft",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-15T18:56:54.219289",
+  "earnings_data": [
+    {
+      "symbol": "MSFT",
+      "earnings_date": "2025-10-19",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.32,
+      "consensus_rating": "Sell",
+      "num_analysts": 11,
+      "confidence_score": 0.7416516205044809,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "MSFT",
+      "earnings_date": "2026-01-07",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.6,
+      "consensus_rating": "Sell",
+      "num_analysts": 24,
+      "confidence_score": 0.8300495049011026,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "MSFT",
+      "earnings_date": "2026-04-20",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.53,
+      "consensus_rating": "Sell",
+      "num_analysts": 24,
+      "confidence_score": 0.655739558336357,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "MSFT",
+      "earnings_date": "2026-07-16",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.55,
+      "consensus_rating": "Buy",
+      "num_analysts": 25,
+      "confidence_score": 0.6147702377576649,
+      "announcement_time": "BMO"
+    }
+  ]
+}
