@@ -1,0 +1,55 @@
+{
+  "symbol": "ABT",
+  "company_name": "Abbott Laboratories",
+  "sector": "Health Care",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-14T19:55:02.265776",
+  "earnings_data": [
+    {
+      "symbol": "ABT",
+      "earnings_date": "2025-10-26",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.48,
+      "consensus_rating": "Buy",
+      "num_analysts": 25,
+      "confidence_score": 0.7647864540557907,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "ABT",
+      "earnings_date": "2026-01-22",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.06,
+      "consensus_rating": "Hold",
+      "num_analysts": 8,
+      "confidence_score": 0.8843422699250831,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "ABT",
+      "earnings_date": "2026-03-26",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.13,
+      "consensus_rating": "Hold",
+      "num_analysts": 8,
+      "confidence_score": 0.6033410307960242,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "ABT",
+      "earnings_date": "2026-07-22",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.97,
+      "consensus_rating": "Buy",
+      "num_analysts": 20,
+      "confidence_score": 0.6803691896684221,
+      "announcement_time": "BMO"
+    }
+  ]
+}

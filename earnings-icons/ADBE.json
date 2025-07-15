@@ -1,0 +1,55 @@
+{
+  "symbol": "ADBE",
+  "company_name": "Adobe Inc.",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-14T19:55:48.120924",
+  "earnings_data": [
+    {
+      "symbol": "ADBE",
+      "earnings_date": "2025-10-01",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.62,
+      "consensus_rating": "Sell",
+      "num_analysts": 20,
+      "confidence_score": 0.7258866096455477,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "ADBE",
+      "earnings_date": "2026-01-04",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.49,
+      "consensus_rating": "Hold",
+      "num_analysts": 22,
+      "confidence_score": 0.766795136346556,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "ADBE",
+      "earnings_date": "2026-03-27",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.58,
+      "consensus_rating": "Hold",
+      "num_analysts": 18,
+      "confidence_score": 0.8803830275085411,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "ADBE",
+      "earnings_date": "2026-07-05",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.56,
+      "consensus_rating": "Buy",
+      "num_analysts": 12,
+      "confidence_score": 0.8436786119390802,
+      "announcement_time": "AMC"
+    }
+  ]
+}

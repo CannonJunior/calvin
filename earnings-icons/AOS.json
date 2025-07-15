@@ -1,0 +1,55 @@
+{
+  "symbol": "AOS",
+  "company_name": "A. O. Smith",
+  "sector": "Industrials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-14T19:54:57.020608",
+  "earnings_data": [
+    {
+      "symbol": "AOS",
+      "earnings_date": "2025-10-17",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.2,
+      "consensus_rating": "Sell",
+      "num_analysts": 22,
+      "confidence_score": 0.7152792410503382,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "AOS",
+      "earnings_date": "2025-12-29",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.19,
+      "consensus_rating": "Buy",
+      "num_analysts": 12,
+      "confidence_score": 0.8109061395959956,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "AOS",
+      "earnings_date": "2026-04-22",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.54,
+      "consensus_rating": "Sell",
+      "num_analysts": 16,
+      "confidence_score": 0.7175106998666692,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "AOS",
+      "earnings_date": "2026-07-18",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.21,
+      "consensus_rating": "Buy",
+      "num_analysts": 12,
+      "confidence_score": 0.6256205345408169,
+      "announcement_time": "BMO"
+    }
+  ]
+}

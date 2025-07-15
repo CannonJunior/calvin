@@ -1,0 +1,55 @@
+{
+  "symbol": "ABBV",
+  "company_name": "AbbVie",
+  "sector": "Health Care",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-14T19:55:02.733007",
+  "earnings_data": [
+    {
+      "symbol": "ABBV",
+      "earnings_date": "2025-10-17",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.96,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.711124673143697,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "ABBV",
+      "earnings_date": "2026-01-25",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.34,
+      "consensus_rating": "Buy",
+      "num_analysts": 18,
+      "confidence_score": 0.7037228241613704,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "ABBV",
+      "earnings_date": "2026-04-22",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.8,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.745189164753204,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "ABBV",
+      "earnings_date": "2026-07-18",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.9,
+      "consensus_rating": "Hold",
+      "num_analysts": 21,
+      "confidence_score": 0.7071165492411039,
+      "announcement_time": "AMC"
+    }
+  ]
+}

@@ -488,7 +488,7 @@ class StockDataCurator:
                         time.sleep(0.2)  # Rate limiting
                     
                     # Create Yahoo Finance URL (no API keys exposed)
-                    source_url = f"https://finance.yahoo.com/quote/{symbol}/history"
+                    source_url = f"https://finance.yahoo.com/quote/{earning['symbol']}/history"
                     
                     # Insert new earnings record
                     insert_query = """

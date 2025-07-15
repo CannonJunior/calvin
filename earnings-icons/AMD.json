@@ -1,0 +1,55 @@
+{
+  "symbol": "AMD",
+  "company_name": "Advanced Micro Devices",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-14T19:55:48.587360",
+  "earnings_data": [
+    {
+      "symbol": "AMD",
+      "earnings_date": "2025-10-21",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.5,
+      "consensus_rating": "Hold",
+      "num_analysts": 10,
+      "confidence_score": 0.8958801354374382,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "AMD",
+      "earnings_date": "2026-01-16",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.47,
+      "consensus_rating": "Hold",
+      "num_analysts": 11,
+      "confidence_score": 0.7105659029255197,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "AMD",
+      "earnings_date": "2026-04-10",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.49,
+      "consensus_rating": "Buy",
+      "num_analysts": 10,
+      "confidence_score": 0.7755561348490595,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "AMD",
+      "earnings_date": "2026-06-26",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.73,
+      "consensus_rating": "Buy",
+      "num_analysts": 17,
+      "confidence_score": 0.7356575026196139,
+      "announcement_time": "BMO"
+    }
+  ]
+}
