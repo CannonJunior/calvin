@@ -1,0 +1,55 @@
+{
+  "symbol": "CVX",
+  "company_name": "Chevron Corporation",
+  "sector": "Energy",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:21.621454",
+  "earnings_data": [
+    {
+      "symbol": "CVX",
+      "earnings_date": "2025-10-17",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.34,
+      "consensus_rating": "Buy",
+      "num_analysts": 12,
+      "confidence_score": 0.6210789158464495,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "CVX",
+      "earnings_date": "2026-01-12",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.69,
+      "consensus_rating": "Buy",
+      "num_analysts": 11,
+      "confidence_score": 0.8218110674824831,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "CVX",
+      "earnings_date": "2026-04-13",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 3.09,
+      "consensus_rating": "Hold",
+      "num_analysts": 24,
+      "confidence_score": 0.8752945654564972,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "CVX",
+      "earnings_date": "2026-07-14",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.98,
+      "consensus_rating": "Hold",
+      "num_analysts": 25,
+      "confidence_score": 0.733387591135481,
+      "announcement_time": "AMC"
+    }
+  ]
+}

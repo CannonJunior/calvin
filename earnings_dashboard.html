@@ -1305,6 +1305,8 @@
                 
             } catch (error) {
                 console.error('❌ Error fetching real earnings data:', error);
+                console.error('❌ Error details:', error.message);
+                console.error('❌ API URL attempted:', `${API_CONFIG.EARNINGS_API}/earnings/timeline`);
                 console.log('🔄 Falling back to earnings-icons data...');
                 return await loadEarningsFromLocalFiles();
             }
@@ -1315,8 +1317,8 @@
             try {
                 console.log('📂 Loading earnings data from earnings-icons directory...');
                 
-                // Get known symbols from sp500Companies array
-                const symbols = sp500Companies.slice(0, 100).map(company => company.symbol);
+                // Get all symbols from sp500Companies array  
+                const symbols = sp500Companies.map(company => company.symbol);
                 const allEarningsData = [];
                 let loadedFiles = 0;
                 
@@ -1377,6 +1379,7 @@
                 }
                 
                 console.log(`✅ Loaded ${allEarningsData.length} earnings events from ${loadedFiles} files`);
+                console.log(`✅ Companies with earnings data: ${loadedFiles}`);
                 return allEarningsData.sort((a, b) => a.date - b.date);
                 
             } catch (error) {

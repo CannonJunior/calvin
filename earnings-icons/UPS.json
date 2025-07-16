@@ -1,0 +1,55 @@
+{
+  "symbol": "UPS",
+  "company_name": "United Parcel Service",
+  "sector": "Industrials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:04.206542",
+  "earnings_data": [
+    {
+      "symbol": "UPS",
+      "earnings_date": "2025-10-21",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.36,
+      "consensus_rating": "Hold",
+      "num_analysts": 18,
+      "confidence_score": 0.8752175855069733,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "UPS",
+      "earnings_date": "2025-12-29",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.86,
+      "consensus_rating": "Sell",
+      "num_analysts": 12,
+      "confidence_score": 0.8719500803929575,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "UPS",
+      "earnings_date": "2026-04-09",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.11,
+      "consensus_rating": "Sell",
+      "num_analysts": 15,
+      "confidence_score": 0.6085649090476359,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "UPS",
+      "earnings_date": "2026-06-26",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.23,
+      "consensus_rating": "Buy",
+      "num_analysts": 15,
+      "confidence_score": 0.6958260727828637,
+      "announcement_time": "BMO"
+    }
+  ]
+}

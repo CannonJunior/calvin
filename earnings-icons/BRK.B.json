@@ -1,0 +1,55 @@
+{
+  "symbol": "BRK.B",
+  "company_name": "Berkshire Hathaway",
+  "sector": "Financials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:14.944637",
+  "earnings_data": [
+    {
+      "symbol": "BRK.B",
+      "earnings_date": "2025-10-14",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.83,
+      "consensus_rating": "Hold",
+      "num_analysts": 19,
+      "confidence_score": 0.674935503685197,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "BRK.B",
+      "earnings_date": "2026-01-26",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 3.18,
+      "consensus_rating": "Sell",
+      "num_analysts": 13,
+      "confidence_score": 0.6557154285481448,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "BRK.B",
+      "earnings_date": "2026-04-17",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 3.05,
+      "consensus_rating": "Hold",
+      "num_analysts": 24,
+      "confidence_score": 0.8918220436893403,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "BRK.B",
+      "earnings_date": "2026-07-25",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.53,
+      "consensus_rating": "Buy",
+      "num_analysts": 24,
+      "confidence_score": 0.6789980234221153,
+      "announcement_time": "BMO"
+    }
+  ]
+}

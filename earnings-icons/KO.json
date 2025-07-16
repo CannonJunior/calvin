@@ -1,0 +1,55 @@
+{
+  "symbol": "KO",
+  "company_name": "Coca-Cola Company (The)",
+  "sector": "Consumer Staples",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:28.040979",
+  "earnings_data": [
+    {
+      "symbol": "KO",
+      "earnings_date": "2025-10-29",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.55,
+      "consensus_rating": "Hold",
+      "num_analysts": 14,
+      "confidence_score": 0.6246747598156432,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "KO",
+      "earnings_date": "2026-01-20",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.55,
+      "consensus_rating": "Hold",
+      "num_analysts": 21,
+      "confidence_score": 0.7124700161396952,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "KO",
+      "earnings_date": "2026-04-27",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.94,
+      "consensus_rating": "Buy",
+      "num_analysts": 17,
+      "confidence_score": 0.8001615519074171,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "KO",
+      "earnings_date": "2026-07-06",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.7,
+      "consensus_rating": "Hold",
+      "num_analysts": 9,
+      "confidence_score": 0.7612833311632895,
+      "announcement_time": "AMC"
+    }
+  ]
+}

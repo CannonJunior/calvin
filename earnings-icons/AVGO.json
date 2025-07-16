@@ -1,0 +1,55 @@
+{
+  "symbol": "AVGO",
+  "company_name": "Broadcom",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:28.585309",
+  "earnings_data": [
+    {
+      "symbol": "AVGO",
+      "earnings_date": "2025-10-28",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.3,
+      "consensus_rating": "Hold",
+      "num_analysts": 12,
+      "confidence_score": 0.7552284605295044,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "AVGO",
+      "earnings_date": "2026-01-13",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 3.02,
+      "consensus_rating": "Buy",
+      "num_analysts": 13,
+      "confidence_score": 0.850160660996027,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "AVGO",
+      "earnings_date": "2026-04-13",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.47,
+      "consensus_rating": "Buy",
+      "num_analysts": 25,
+      "confidence_score": 0.7609761150353929,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "AVGO",
+      "earnings_date": "2026-07-17",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.28,
+      "consensus_rating": "Buy",
+      "num_analysts": 23,
+      "confidence_score": 0.7777895318585488,
+      "announcement_time": "AMC"
+    }
+  ]
+}

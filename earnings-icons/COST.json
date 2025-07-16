@@ -1,0 +1,55 @@
+{
+  "symbol": "COST",
+  "company_name": "Costco",
+  "sector": "Consumer Staples",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:29.143250",
+  "earnings_data": [
+    {
+      "symbol": "COST",
+      "earnings_date": "2025-10-19",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.52,
+      "consensus_rating": "Sell",
+      "num_analysts": 15,
+      "confidence_score": 0.6702156849288092,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "COST",
+      "earnings_date": "2026-01-06",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.46,
+      "consensus_rating": "Hold",
+      "num_analysts": 25,
+      "confidence_score": 0.7967870014317725,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "COST",
+      "earnings_date": "2026-04-13",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.72,
+      "consensus_rating": "Sell",
+      "num_analysts": 25,
+      "confidence_score": 0.7147920778289536,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "COST",
+      "earnings_date": "2026-07-02",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.54,
+      "consensus_rating": "Buy",
+      "num_analysts": 22,
+      "confidence_score": 0.7966795532959061,
+      "announcement_time": "BMO"
+    }
+  ]
+}

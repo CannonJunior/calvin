@@ -1,0 +1,55 @@
+{
+  "symbol": "BAC",
+  "company_name": "Bank of America",
+  "sector": "Financials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:22.636500",
+  "earnings_data": [
+    {
+      "symbol": "BAC",
+      "earnings_date": "2025-09-30",
+      "quarter": 3,
+      "year": 2025,
+      "estimated_eps": 3.13,
+      "consensus_rating": "Sell",
+      "num_analysts": 13,
+      "confidence_score": 0.6108833073770337,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "BAC",
+      "earnings_date": "2026-01-18",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 3.34,
+      "consensus_rating": "Hold",
+      "num_analysts": 25,
+      "confidence_score": 0.7479382280857377,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "BAC",
+      "earnings_date": "2026-04-03",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.68,
+      "consensus_rating": "Buy",
+      "num_analysts": 13,
+      "confidence_score": 0.6100025874725669,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "BAC",
+      "earnings_date": "2026-07-14",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 3.18,
+      "consensus_rating": "Buy",
+      "num_analysts": 8,
+      "confidence_score": 0.8569757197066541,
+      "announcement_time": "BMO"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "symbol": "MA",
+  "company_name": "Mastercard",
+  "sector": "Financials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:22.190198",
+  "earnings_data": [
+    {
+      "symbol": "MA",
+      "earnings_date": "2025-10-02",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.91,
+      "consensus_rating": "Sell",
+      "num_analysts": 22,
+      "confidence_score": 0.7995682899173002,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "MA",
+      "earnings_date": "2026-01-21",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 3.2,
+      "consensus_rating": "Buy",
+      "num_analysts": 20,
+      "confidence_score": 0.8237277147624256,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "MA",
+      "earnings_date": "2026-04-25",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.92,
+      "consensus_rating": "Hold",
+      "num_analysts": 19,
+      "confidence_score": 0.7328411129333423,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "MA",
+      "earnings_date": "2026-07-16",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 3.17,
+      "consensus_rating": "Hold",
+      "num_analysts": 10,
+      "confidence_score": 0.8933390915010375,
+      "announcement_time": "BMO"
+    }
+  ]
+}

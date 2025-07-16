@@ -1,0 +1,55 @@
+{
+  "symbol": "BMY",
+  "company_name": "Bristol Myers Squibb",
+  "sector": "Health Care",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:45.799269",
+  "earnings_data": [
+    {
+      "symbol": "BMY",
+      "earnings_date": "2025-10-20",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.13,
+      "consensus_rating": "Hold",
+      "num_analysts": 24,
+      "confidence_score": 0.6558264953612799,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "BMY",
+      "earnings_date": "2026-01-03",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.45,
+      "consensus_rating": "Hold",
+      "num_analysts": 22,
+      "confidence_score": 0.8190752089469375,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "BMY",
+      "earnings_date": "2026-03-29",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.07,
+      "consensus_rating": "Hold",
+      "num_analysts": 16,
+      "confidence_score": 0.6146595118305463,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "BMY",
+      "earnings_date": "2026-07-20",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.83,
+      "consensus_rating": "Hold",
+      "num_analysts": 14,
+      "confidence_score": 0.8500235116909358,
+      "announcement_time": "AMC"
+    }
+  ]
+}

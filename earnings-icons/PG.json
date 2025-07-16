@@ -1,0 +1,55 @@
+{
+  "symbol": "PG",
+  "company_name": "Procter & Gamble",
+  "sector": "Consumer Staples",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:50:41.235247",
+  "earnings_data": [
+    {
+      "symbol": "PG",
+      "earnings_date": "2025-10-05",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.57,
+      "consensus_rating": "Hold",
+      "num_analysts": 12,
+      "confidence_score": 0.6187969085596224,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "PG",
+      "earnings_date": "2026-01-02",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.3,
+      "consensus_rating": "Hold",
+      "num_analysts": 24,
+      "confidence_score": 0.6266876703099442,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "PG",
+      "earnings_date": "2026-04-09",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.62,
+      "consensus_rating": "Hold",
+      "num_analysts": 24,
+      "confidence_score": 0.8490133522910879,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "PG",
+      "earnings_date": "2026-07-11",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.53,
+      "consensus_rating": "Sell",
+      "num_analysts": 20,
+      "confidence_score": 0.8070443330311776,
+      "announcement_time": "AMC"
+    }
+  ]
+}

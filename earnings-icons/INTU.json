@@ -1,0 +1,55 @@
+{
+  "symbol": "INTU",
+  "company_name": "Intuit",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:53.960113",
+  "earnings_data": [
+    {
+      "symbol": "INTU",
+      "earnings_date": "2025-09-29",
+      "quarter": 3,
+      "year": 2025,
+      "estimated_eps": 2.59,
+      "consensus_rating": "Buy",
+      "num_analysts": 11,
+      "confidence_score": 0.7014681537557228,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "INTU",
+      "earnings_date": "2026-01-19",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.57,
+      "consensus_rating": "Buy",
+      "num_analysts": 14,
+      "confidence_score": 0.6416676022871936,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "INTU",
+      "earnings_date": "2026-04-24",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.93,
+      "consensus_rating": "Buy",
+      "num_analysts": 14,
+      "confidence_score": 0.8950316340396547,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "INTU",
+      "earnings_date": "2026-07-17",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.57,
+      "consensus_rating": "Hold",
+      "num_analysts": 14,
+      "confidence_score": 0.6390897717787007,
+      "announcement_time": "AMC"
+    }
+  ]
+}

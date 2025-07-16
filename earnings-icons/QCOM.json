@@ -1,0 +1,55 @@
+{
+  "symbol": "QCOM",
+  "company_name": "Qualcomm",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:03.719188",
+  "earnings_data": [
+    {
+      "symbol": "QCOM",
+      "earnings_date": "2025-10-02",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.39,
+      "consensus_rating": "Hold",
+      "num_analysts": 17,
+      "confidence_score": 0.8864689564358779,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "QCOM",
+      "earnings_date": "2026-01-13",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.53,
+      "consensus_rating": "Hold",
+      "num_analysts": 16,
+      "confidence_score": 0.6293856286768101,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "QCOM",
+      "earnings_date": "2026-04-17",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.69,
+      "consensus_rating": "Buy",
+      "num_analysts": 9,
+      "confidence_score": 0.8239395139484735,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "QCOM",
+      "earnings_date": "2026-07-01",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.25,
+      "consensus_rating": "Buy",
+      "num_analysts": 22,
+      "confidence_score": 0.703422813353078,
+      "announcement_time": "BMO"
+    }
+  ]
+}

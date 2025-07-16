@@ -1,0 +1,55 @@
+{
+  "symbol": "CAT",
+  "company_name": "Caterpillar Inc.",
+  "sector": "Industrials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:58.416677",
+  "earnings_data": [
+    {
+      "symbol": "CAT",
+      "earnings_date": "2025-10-27",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.27,
+      "consensus_rating": "Sell",
+      "num_analysts": 21,
+      "confidence_score": 0.8725740070788051,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "CAT",
+      "earnings_date": "2026-01-14",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.2,
+      "consensus_rating": "Sell",
+      "num_analysts": 9,
+      "confidence_score": 0.6899636463461725,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "CAT",
+      "earnings_date": "2026-04-21",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.33,
+      "consensus_rating": "Hold",
+      "num_analysts": 8,
+      "confidence_score": 0.7705144796374575,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "CAT",
+      "earnings_date": "2026-07-02",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.86,
+      "consensus_rating": "Buy",
+      "num_analysts": 21,
+      "confidence_score": 0.7728247811773987,
+      "announcement_time": "AMC"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "symbol": "HD",
+  "company_name": "Home Depot (The)",
+  "sector": "Consumer Discretionary",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:15.985881",
+  "earnings_data": [
+    {
+      "symbol": "HD",
+      "earnings_date": "2025-10-25",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.66,
+      "consensus_rating": "Hold",
+      "num_analysts": 15,
+      "confidence_score": 0.8954266157431641,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "HD",
+      "earnings_date": "2026-01-15",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.77,
+      "consensus_rating": "Buy",
+      "num_analysts": 18,
+      "confidence_score": 0.6604270732900293,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "HD",
+      "earnings_date": "2026-04-01",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.81,
+      "consensus_rating": "Hold",
+      "num_analysts": 15,
+      "confidence_score": 0.6298400989619342,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "HD",
+      "earnings_date": "2026-07-11",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.74,
+      "consensus_rating": "Buy",
+      "num_analysts": 15,
+      "confidence_score": 0.836397540939168,
+      "announcement_time": "AMC"
+    }
+  ]
+}

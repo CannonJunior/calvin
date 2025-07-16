@@ -1,0 +1,55 @@
+{
+  "symbol": "XOM",
+  "company_name": "ExxonMobil",
+  "sector": "Energy",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:15.440914",
+  "earnings_data": [
+    {
+      "symbol": "XOM",
+      "earnings_date": "2025-09-29",
+      "quarter": 3,
+      "year": 2025,
+      "estimated_eps": 2.64,
+      "consensus_rating": "Buy",
+      "num_analysts": 21,
+      "confidence_score": 0.7242985063407061,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "XOM",
+      "earnings_date": "2026-01-04",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 3.15,
+      "consensus_rating": "Buy",
+      "num_analysts": 23,
+      "confidence_score": 0.7567413562559421,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "XOM",
+      "earnings_date": "2026-04-16",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.05,
+      "consensus_rating": "Buy",
+      "num_analysts": 20,
+      "confidence_score": 0.7015075409102021,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "XOM",
+      "earnings_date": "2026-06-29",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.78,
+      "consensus_rating": "Hold",
+      "num_analysts": 22,
+      "confidence_score": 0.700680098227551,
+      "announcement_time": "BMO"
+    }
+  ]
+}

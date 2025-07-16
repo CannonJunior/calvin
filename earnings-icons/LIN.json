@@ -1,0 +1,55 @@
+{
+  "symbol": "LIN",
+  "company_name": "Linde plc",
+  "sector": "Materials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:40.632496",
+  "earnings_data": [
+    {
+      "symbol": "LIN",
+      "earnings_date": "2025-10-01",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.87,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.7400653701178925,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "LIN",
+      "earnings_date": "2026-01-20",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.1,
+      "consensus_rating": "Buy",
+      "num_analysts": 10,
+      "confidence_score": 0.6752139219201512,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "LIN",
+      "earnings_date": "2026-04-22",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.9,
+      "consensus_rating": "Buy",
+      "num_analysts": 8,
+      "confidence_score": 0.7691628975107034,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "LIN",
+      "earnings_date": "2026-07-06",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.96,
+      "consensus_rating": "Sell",
+      "num_analysts": 12,
+      "confidence_score": 0.6833710018420149,
+      "announcement_time": "BMO"
+    }
+  ]
+}

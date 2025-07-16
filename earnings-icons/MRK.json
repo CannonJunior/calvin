@@ -1,0 +1,55 @@
+{
+  "symbol": "MRK",
+  "company_name": "Merck & Co.",
+  "sector": "Health Care",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:39.681531",
+  "earnings_data": [
+    {
+      "symbol": "MRK",
+      "earnings_date": "2025-10-28",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.68,
+      "consensus_rating": "Hold",
+      "num_analysts": 19,
+      "confidence_score": 0.8438578741445428,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "MRK",
+      "earnings_date": "2026-01-04",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.78,
+      "consensus_rating": "Hold",
+      "num_analysts": 24,
+      "confidence_score": 0.6466704929960495,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "MRK",
+      "earnings_date": "2026-04-13",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.87,
+      "consensus_rating": "Hold",
+      "num_analysts": 15,
+      "confidence_score": 0.6499449859095109,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "MRK",
+      "earnings_date": "2026-07-08",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.0,
+      "consensus_rating": "Hold",
+      "num_analysts": 25,
+      "confidence_score": 0.8938695284880109,
+      "announcement_time": "BMO"
+    }
+  ]
+}

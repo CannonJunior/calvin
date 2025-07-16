@@ -1,0 +1,55 @@
+{
+  "symbol": "LOW",
+  "company_name": "Lowe's",
+  "sector": "Consumer Discretionary",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:52.785097",
+  "earnings_data": [
+    {
+      "symbol": "LOW",
+      "earnings_date": "2025-10-10",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.76,
+      "consensus_rating": "Hold",
+      "num_analysts": 17,
+      "confidence_score": 0.8515277720376165,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "LOW",
+      "earnings_date": "2026-01-14",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.69,
+      "consensus_rating": "Buy",
+      "num_analysts": 25,
+      "confidence_score": 0.7458732992092292,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "LOW",
+      "earnings_date": "2026-04-18",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.67,
+      "consensus_rating": "Sell",
+      "num_analysts": 16,
+      "confidence_score": 0.8983928885787754,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "LOW",
+      "earnings_date": "2026-07-03",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.86,
+      "consensus_rating": "Sell",
+      "num_analysts": 17,
+      "confidence_score": 0.6429096288952191,
+      "announcement_time": "BMO"
+    }
+  ]
+}

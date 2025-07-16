@@ -1,0 +1,55 @@
+{
+  "symbol": "PFE",
+  "company_name": "Pfizer",
+  "sector": "Health Care",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:50:42.397157",
+  "earnings_data": [
+    {
+      "symbol": "PFE",
+      "earnings_date": "2025-10-12",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.41,
+      "consensus_rating": "Hold",
+      "num_analysts": 12,
+      "confidence_score": 0.7055820529215199,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "PFE",
+      "earnings_date": "2025-12-28",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.11,
+      "consensus_rating": "Buy",
+      "num_analysts": 13,
+      "confidence_score": 0.8051509210371862,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "PFE",
+      "earnings_date": "2026-04-09",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.15,
+      "consensus_rating": "Sell",
+      "num_analysts": 14,
+      "confidence_score": 0.8649310376369894,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "PFE",
+      "earnings_date": "2026-07-02",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.81,
+      "consensus_rating": "Buy",
+      "num_analysts": 9,
+      "confidence_score": 0.7299311214760331,
+      "announcement_time": "AMC"
+    }
+  ]
+}

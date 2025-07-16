@@ -1,0 +1,55 @@
+{
+  "symbol": "CSCO",
+  "company_name": "Cisco",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:40.163323",
+  "earnings_data": [
+    {
+      "symbol": "CSCO",
+      "earnings_date": "2025-10-23",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.7,
+      "consensus_rating": "Sell",
+      "num_analysts": 11,
+      "confidence_score": 0.6826358758565432,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "CSCO",
+      "earnings_date": "2026-01-17",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.53,
+      "consensus_rating": "Hold",
+      "num_analysts": 24,
+      "confidence_score": 0.6295930657952,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "CSCO",
+      "earnings_date": "2026-04-22",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.23,
+      "consensus_rating": "Hold",
+      "num_analysts": 15,
+      "confidence_score": 0.6809502098244588,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "CSCO",
+      "earnings_date": "2026-06-27",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.49,
+      "consensus_rating": "Hold",
+      "num_analysts": 17,
+      "confidence_score": 0.7589310372967514,
+      "announcement_time": "AMC"
+    }
+  ]
+}

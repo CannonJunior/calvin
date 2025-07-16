@@ -1,0 +1,55 @@
+{
+  "symbol": "UNH",
+  "company_name": "UnitedHealth Group",
+  "sector": "Health Care",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:50:34.321394",
+  "earnings_data": [
+    {
+      "symbol": "UNH",
+      "earnings_date": "2025-10-16",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.07,
+      "consensus_rating": "Hold",
+      "num_analysts": 20,
+      "confidence_score": 0.711840076478208,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "UNH",
+      "earnings_date": "2026-01-21",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.07,
+      "consensus_rating": "Hold",
+      "num_analysts": 14,
+      "confidence_score": 0.7031348058162494,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "UNH",
+      "earnings_date": "2026-04-24",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.96,
+      "consensus_rating": "Buy",
+      "num_analysts": 24,
+      "confidence_score": 0.6662345010385773,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "UNH",
+      "earnings_date": "2026-07-05",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.1,
+      "consensus_rating": "Hold",
+      "num_analysts": 16,
+      "confidence_score": 0.70746862636387,
+      "announcement_time": "BMO"
+    }
+  ]
+}

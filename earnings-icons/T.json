@@ -1,0 +1,55 @@
+{
+  "symbol": "T",
+  "company_name": "AT&T",
+  "sector": "Communication Services",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:46.296173",
+  "earnings_data": [
+    {
+      "symbol": "T",
+      "earnings_date": "2025-10-18",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.41,
+      "consensus_rating": "Hold",
+      "num_analysts": 14,
+      "confidence_score": 0.6363060752936985,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "T",
+      "earnings_date": "2026-01-25",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.6,
+      "consensus_rating": "Buy",
+      "num_analysts": 9,
+      "confidence_score": 0.828404902559104,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "T",
+      "earnings_date": "2026-04-16",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.61,
+      "consensus_rating": "Hold",
+      "num_analysts": 25,
+      "confidence_score": 0.8046804540097581,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "T",
+      "earnings_date": "2026-07-06",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.54,
+      "consensus_rating": "Buy",
+      "num_analysts": 21,
+      "confidence_score": 0.8706929507663115,
+      "announcement_time": "AMC"
+    }
+  ]
+}

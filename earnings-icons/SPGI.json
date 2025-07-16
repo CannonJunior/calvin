@@ -1,0 +1,55 @@
+{
+  "symbol": "SPGI",
+  "company_name": "S&P Global",
+  "sector": "Financials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:51:09.474146",
+  "earnings_data": [
+    {
+      "symbol": "SPGI",
+      "earnings_date": "2025-10-01",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 3.42,
+      "consensus_rating": "Hold",
+      "num_analysts": 12,
+      "confidence_score": 0.7486764279966831,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "SPGI",
+      "earnings_date": "2025-12-30",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.98,
+      "consensus_rating": "Sell",
+      "num_analysts": 12,
+      "confidence_score": 0.6369852117931734,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "SPGI",
+      "earnings_date": "2026-03-31",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.85,
+      "consensus_rating": "Sell",
+      "num_analysts": 11,
+      "confidence_score": 0.7277677351902337,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "SPGI",
+      "earnings_date": "2026-07-08",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.52,
+      "consensus_rating": "Buy",
+      "num_analysts": 24,
+      "confidence_score": 0.7205676018528188,
+      "announcement_time": "AMC"
+    }
+  ]
+}

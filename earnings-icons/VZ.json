@@ -1,0 +1,55 @@
+{
+  "symbol": "VZ",
+  "company_name": "Verizon",
+  "sector": "Communication Services",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:50:57.497847",
+  "earnings_data": [
+    {
+      "symbol": "VZ",
+      "earnings_date": "2025-10-13",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.27,
+      "consensus_rating": "Hold",
+      "num_analysts": 25,
+      "confidence_score": 0.7260492219680419,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "VZ",
+      "earnings_date": "2026-01-18",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.34,
+      "consensus_rating": "Buy",
+      "num_analysts": 18,
+      "confidence_score": 0.6656438058406324,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "VZ",
+      "earnings_date": "2026-04-07",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.65,
+      "consensus_rating": "Buy",
+      "num_analysts": 21,
+      "confidence_score": 0.7262755121994215,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "VZ",
+      "earnings_date": "2026-06-29",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.62,
+      "consensus_rating": "Sell",
+      "num_analysts": 14,
+      "confidence_score": 0.6890897003965861,
+      "announcement_time": "BMO"
+    }
+  ]
+}

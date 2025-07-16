@@ -1,0 +1,55 @@
+{
+  "symbol": "TMO",
+  "company_name": "Thermo Fisher Scientific",
+  "sector": "Health Care",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:50:51.340463",
+  "earnings_data": [
+    {
+      "symbol": "TMO",
+      "earnings_date": "2025-10-09",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.14,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.6893260967013228,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "TMO",
+      "earnings_date": "2026-01-20",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.08,
+      "consensus_rating": "Buy",
+      "num_analysts": 11,
+      "confidence_score": 0.8909303991695589,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "TMO",
+      "earnings_date": "2026-04-07",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 1.52,
+      "consensus_rating": "Sell",
+      "num_analysts": 18,
+      "confidence_score": 0.6154737369619478,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "TMO",
+      "earnings_date": "2026-07-12",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.83,
+      "consensus_rating": "Hold",
+      "num_analysts": 22,
+      "confidence_score": 0.6607570736055397,
+      "announcement_time": "AMC"
+    }
+  ]
+}

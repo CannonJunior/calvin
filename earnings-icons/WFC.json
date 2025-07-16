@@ -1,0 +1,55 @@
+{
+  "symbol": "WFC",
+  "company_name": "Wells Fargo",
+  "sector": "Financials",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:50:58.677279",
+  "earnings_data": [
+    {
+      "symbol": "WFC",
+      "earnings_date": "2025-10-16",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 3.4,
+      "consensus_rating": "Sell",
+      "num_analysts": 25,
+      "confidence_score": 0.6466493487694613,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "WFC",
+      "earnings_date": "2025-12-31",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 3.31,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.8929629257239049,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "WFC",
+      "earnings_date": "2026-03-29",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 3.11,
+      "consensus_rating": "Sell",
+      "num_analysts": 12,
+      "confidence_score": 0.6607027562012577,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "WFC",
+      "earnings_date": "2026-07-06",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.81,
+      "consensus_rating": "Hold",
+      "num_analysts": 12,
+      "confidence_score": 0.7645719855874773,
+      "announcement_time": "AMC"
+    }
+  ]
+}

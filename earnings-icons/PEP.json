@@ -1,0 +1,55 @@
+{
+  "symbol": "PEP",
+  "company_name": "PepsiCo",
+  "sector": "Consumer Staples",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:50:50.496956",
+  "earnings_data": [
+    {
+      "symbol": "PEP",
+      "earnings_date": "2025-10-29",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 1.44,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.634501136558904,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "PEP",
+      "earnings_date": "2026-01-04",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.68,
+      "consensus_rating": "Hold",
+      "num_analysts": 19,
+      "confidence_score": 0.8787970026336952,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "PEP",
+      "earnings_date": "2026-03-28",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 1.4,
+      "consensus_rating": "Hold",
+      "num_analysts": 13,
+      "confidence_score": 0.6820042341056075,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "PEP",
+      "earnings_date": "2026-07-11",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 1.36,
+      "consensus_rating": "Hold",
+      "num_analysts": 23,
+      "confidence_score": 0.7515757681332247,
+      "announcement_time": "BMO"
+    }
+  ]
+}

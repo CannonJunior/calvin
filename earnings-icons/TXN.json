@@ -1,0 +1,55 @@
+{
+  "symbol": "TXN",
+  "company_name": "Texas Instruments",
+  "sector": "Information Technology",
+  "total_earnings": 4,
+  "real_earnings": 0,
+  "future_earnings": 4,
+  "curated_at": "2025-07-16T17:50:58.128392",
+  "earnings_data": [
+    {
+      "symbol": "TXN",
+      "earnings_date": "2025-10-12",
+      "quarter": 4,
+      "year": 2025,
+      "estimated_eps": 2.28,
+      "consensus_rating": "Buy",
+      "num_analysts": 17,
+      "confidence_score": 0.8354256341960925,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "TXN",
+      "earnings_date": "2026-01-18",
+      "quarter": 1,
+      "year": 2026,
+      "estimated_eps": 2.71,
+      "consensus_rating": "Hold",
+      "num_analysts": 18,
+      "confidence_score": 0.7285807633411368,
+      "announcement_time": "AMC"
+    },
+    {
+      "symbol": "TXN",
+      "earnings_date": "2026-04-18",
+      "quarter": 2,
+      "year": 2026,
+      "estimated_eps": 2.16,
+      "consensus_rating": "Hold",
+      "num_analysts": 20,
+      "confidence_score": 0.79425451355598,
+      "announcement_time": "BMO"
+    },
+    {
+      "symbol": "TXN",
+      "earnings_date": "2026-07-08",
+      "quarter": 3,
+      "year": 2026,
+      "estimated_eps": 2.81,
+      "consensus_rating": "Hold",
+      "num_analysts": 20,
+      "confidence_score": 0.7517834287934646,
+      "announcement_time": "AMC"
+    }
+  ]
+}
