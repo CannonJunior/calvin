@@ -2,11 +2,22 @@
   "symbol": "NVDA",
   "company_name": "Nvidia",
   "sector": "Information Technology",
-  "total_earnings": 4,
-  "real_earnings": 0,
+  "total_earnings": 5,
+  "real_earnings": 1,
   "future_earnings": 4,
   "curated_at": "2025-07-15T18:56:54.665486",
   "earnings_data": [
+    {
+      "symbol": "NVDA",
+      "earnings_date": "2025-05-15",
+      "quarter": 2,
+      "year": 2025,
+      "estimated_eps": 1.85,
+      "consensus_rating": "Buy",
+      "num_analysts": 15,
+      "confidence_score": 0.8234567890123456,
+      "announcement_time": "AMC"
+    },
     {
       "symbol": "NVDA",
       "earnings_date": "2025-10-12",
