@@ -1238,87 +1238,16 @@
             }
         }
 
-        // Fetch real earnings data from PostgreSQL with enhanced historical data
-        async function fetchRealEarningsData() {
-            try {
-                console.log('📊 Fetching real earnings data from PostgreSQL...');
-                
-                const response = await fetch(`${API_CONFIG.EARNINGS_API}/earnings/timeline`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                const timelineData = data.timeline_data || [];
-                
-                console.log(`✅ Loaded ${timelineData.length} real earnings events from database`);
-                console.log('📈 Fetching historical market data for each earnings event...');
-                
-                // Enhance earnings data with real historical market cap and price changes
-                const enhancedData = await Promise.all(timelineData.map(async (item) => {
-                    const earningsDate = new Date(item.date);
-                    const symbol = item.symbol;
-                    
-                    // Fetch historical market cap for the earnings date
-                    const marketCapData = await fetchHistoricalMarketCap(symbol, earningsDate);
-                    
-                    // Fetch price change data for past earnings only
-                    let priceChangeData = { priceChange: null, dataSource: null };
-                    if (item.type === 'past') {
-                        priceChangeData = await fetchHistoricalPriceChange(symbol, earningsDate);
-                    }
-                    
-                    return {
-                        symbol: item.symbol,
-                        company_name: item.company_name,
-                        date: earningsDate,
-                        type: item.type,
-                        sector: item.sector,
-                        
-                        // Enhanced price and prediction data with real API data
-                        priceChange: priceChangeData.priceChange !== null ? priceChangeData.priceChange : (parseFloat(item.priceChange) || 0),
-                        predictionAccuracy: parseFloat(item.predictionAccuracy) || 0.5,
-                        marketCap: marketCapData.marketCap !== null ? marketCapData.marketCap : (parseFloat(item.marketCap) || 1000),
-                        volume: parseInt(item.volume) || 50000000,
-                        
-                        // Earnings specific data
-                        actualEPS: parseFloat(item.actualEPS) || null,
-                        expectedEPS: parseFloat(item.expectedEPS) || null,
-                        beat_miss_meet: item.beat_miss_meet,
-                        surprise_percent: parseFloat(item.surprise_percent) || null,
-                        
-                        // Future earnings
-                        analystExpectation: item.analystExpectation || (item.type === 'future' ? 'meet' : null),
-                        confidence: parseFloat(item.confidence) || 0.5,
-                        consensusRating: item.consensusRating,
-                        announcement_time: item.announcement_time,
-                        
-                        // Data source tracking - use stored source URL from database first
-                        source_url: item.source_url || marketCapData.dataSource || priceChangeData.dataSource,
-                        marketCapDataSource: marketCapData.dataSource,
-                        priceChangeDataSource: priceChangeData.dataSource
-                    };
-                }));
-                
-                console.log('✅ Enhanced earnings data with real historical market data');
-                return enhancedData.sort((a, b) => a.date - b.date);
-                
-            } catch (error) {
-                console.error('❌ Error fetching real earnings data:', error);
-                console.error('❌ Error details:', error.message);
-                console.error('❌ API URL attempted:', `${API_CONFIG.EARNINGS_API}/earnings/timeline`);
-                console.log('🔄 Falling back to earnings-icons data...');
-                return await loadEarningsFromLocalFiles();
-            }
-        }
+        // Removed fetchRealEarningsData - now using only earnings-icons data
 
         // Load earnings data from earnings-icons directory
         async function loadEarningsFromLocalFiles() {
             try {
                 console.log('📂 Loading earnings data from earnings-icons directory...');
+                console.log(`📈 Loading data for ${sp500Companies.length} companies`);
                 
                 // Get all symbols from sp500Companies array  
-                const symbols = sp500Companies.map(company => company.symbol);
+                const symbols = sp500Companies;
                 const allEarningsData = [];
                 let loadedFiles = 0;
                 
@@ -1330,69 +1259,55 @@
                             const iconData = await response.json();
                             loadedFiles++;
                             
-                            // Convert earnings_data to timeline format
-                            if (iconData.earnings_data && Array.isArray(iconData.earnings_data)) {
-                                // Process each earnings entry to determine if it's past or future
-                                const processedEarnings = await Promise.all(iconData.earnings_data.map(async (earning) => {
+                            // Convert historical_reports and projected_reports to timeline format
+                            const allEarnings = [
+                                ...(iconData.historical_reports || []),
+                                ...(iconData.projected_reports || [])
+                            ];
+                            
+                            if (allEarnings.length > 0) {
+                                // Process each earnings entry 
+                                const processedEarnings = allEarnings.map((earning) => {
                                     const earningsDate = new Date(earning.earnings_date);
                                     const now = new Date();
                                     const isPast = earningsDate < now;
                                     
-                                    // Calculate market cap based on sector (rough estimates in billions)
-                                    let estimatedMarketCap = 50; // Default 50B
-                                    const sector = iconData.sector || 'Unknown';
-                                    if (sector.includes('Technology')) estimatedMarketCap = 100;
-                                    else if (sector.includes('Health Care')) estimatedMarketCap = 80;
-                                    else if (sector.includes('Financial')) estimatedMarketCap = 60;
-                                    else if (sector.includes('Consumer')) estimatedMarketCap = 40;
-                                    
-                                    // For past earnings, try to fetch actual historical market cap
-                                    let marketCapData = { marketCap: estimatedMarketCap, dataSource: 'earnings-icons' };
-                                    let priceChangeData = { priceChange: 0, dataSource: null };
-                                    
-                                    if (isPast) {
-                                        try {
-                                            marketCapData = await fetchHistoricalMarketCap(earning.symbol || iconData.symbol, earningsDate);
-                                            if (marketCapData.marketCap === null) {
-                                                marketCapData.marketCap = estimatedMarketCap;
-                                            }
-                                            priceChangeData = await fetchHistoricalPriceChange(earning.symbol || iconData.symbol, earningsDate);
-                                        } catch (error) {
-                                            console.warn(`Failed to fetch historical data for ${earning.symbol || iconData.symbol}:`, error);
-                                        }
+                                    // Debug logging for price change
+                                    if (earning.percentage_stock_change !== undefined && earning.percentage_stock_change !== null) {
+                                        console.log(`📊 ${earning.symbol || iconData.symbol} price change: ${earning.percentage_stock_change}%`);
                                     }
                                     
                                     return {
                                         symbol: earning.symbol || iconData.symbol,
-                                        company_name: iconData.company_name || earning.symbol,
+                                        company_name: iconData.company_name || earning.symbol || symbol,
                                         date: earningsDate,
                                         type: isPast ? 'past' : 'future',
-                                        sector: iconData.sector || 'Unknown',
+                                        sector: iconData.sector || earning.market_sector || 'Unknown',
                                         
-                                        // Use fetched data for past earnings, estimates for future
-                                        priceChange: isPast ? (priceChangeData.priceChange || 0) : 0,
+                                        // Use data directly from JSON
+                                        priceChange: parseFloat(earning.percentage_stock_change) || 0,
                                         predictionAccuracy: earning.confidence_score || 0.5,
-                                        marketCap: marketCapData.marketCap,
-                                        volume: 50000000,
+                                        marketCap: earning.market_cap || 1000,
+                                        volume: earning.volume || 50000000,
                                         
                                         // Earnings specific data
-                                        actualEPS: isPast ? (Math.random() * 5 + 0.5) : null, // Mock data for past
-                                        expectedEPS: parseFloat(earning.estimated_eps) || null,
-                                        beat_miss_meet: isPast ? (['BEAT', 'MISS', 'MEET'][Math.floor(Math.random() * 3)]) : null,
-                                        surprise_percent: isPast ? ((Math.random() - 0.5) * 20) : null,
+                                        actualEPS: earning.actual_eps || null,
+                                        expectedEPS: earning.estimated_eps || null,
+                                        beat_miss_meet: earning.beat_miss_meet || null,
+                                        surprise_percent: earning.surprise_percent || null,
                                         
-                                        // Future earnings data from earnings-icons
+                                        // Additional data from JSON
                                         analystExpectation: 'meet',
                                         confidence: parseFloat(earning.confidence_score) || 0.5,
                                         consensusRating: earning.consensus_rating || 'Hold',
                                         announcement_time: earning.announcement_time || 'Unknown',
                                         
                                         // Data sources
-                                        source_url: 'earnings-icons',
-                                        marketCapDataSource: marketCapData.dataSource,
-                                        priceChangeDataSource: priceChangeData.dataSource
+                                        source_url: earning.source_url || 'earnings-icons',
+                                        marketCapDataSource: 'earnings-icons',
+                                        priceChangeDataSource: 'earnings-icons'
                                     };
-                                }));
+                                });
                                 
                                 allEarningsData.push(...processedEarnings);
                             }
@@ -1405,91 +1320,18 @@
                 
                 console.log(`✅ Loaded ${allEarningsData.length} earnings events from ${loadedFiles} files`);
                 console.log(`✅ Companies with earnings data: ${loadedFiles}`);
+                console.log('📊 Sample earnings data:', allEarningsData.slice(0, 3));
                 return allEarningsData.sort((a, b) => a.date - b.date);
                 
             } catch (error) {
                 console.error('❌ Error loading earnings from local files:', error);
-                console.log('🔄 Falling back to mock data...');
-                return generateMockEarningsData();
+                return [];
             }
         }
 
-        // Generate combined real and estimated data (updated to use PostgreSQL)
-        async function generateRealData() {
-            try {
-                // Fetch real market data for ticker
-                const marketData = await fetchRealMarketData(sp500Companies, 15);
-                realTickerData = marketData.reduce((acc, stock) => {
-                    if (stock) {
-                        acc[stock.symbol] = stock;
-                    }
-                    return acc;
-                }, {});
-                
-                // Fetch real earnings data from PostgreSQL
-                const earningsData = await fetchRealEarningsData();
-                realEarningsData = earningsData;
-                
-                return realEarningsData;
-            } catch (error) {
-                console.error('Error generating real data:', error);
-                // Fallback to mock data
-                return generateMockEarningsData();
-            }
-        }
+        // Removed generateRealData - now using only earnings-icons data
 
-        // Fallback mock data generator (smaller, for supplementing real data)
-        function generateMockEarningsData() {
-            const data = [];
-            const now = new Date();
-            const limitedCompanies = sp500Companies.slice(0, 15);
-            
-            limitedCompanies.forEach((symbol) => {
-                // Past earnings (last 2 quarters)
-                for (let q = 0; q < 2; q++) {
-                    const date = new Date(now);
-                    date.setMonth(date.getMonth() - (q * 3) - Math.random() * 30);
-                    
-                    data.push({
-                        symbol,
-                        date,
-                        type: 'past',
-                        priceChange: (Math.random() - 0.5) * 20,
-                        predictionAccuracy: Math.random(),
-                        marketCap: Math.random() * 2000 + 100,
-                        volume: Math.random() * 100000000 + 1000000,
-                        sector: getSectorForSymbol(symbol),
-                        actualEPS: (Math.random() * 5 + 0.5).toFixed(2),
-                        expectedEPS: (Math.random() * 5 + 0.5).toFixed(2),
-                        marketCapDataSource: `${API_CONFIG.BASE_URL_FMP}/historical-market-capitalization/${symbol}?apikey=${API_CONFIG.FMP_KEY}`,
-                        priceChangeDataSource: `${API_CONFIG.BASE_URL_FMP}/historical-price-full/${symbol}?apikey=${API_CONFIG.FMP_KEY}`
-                    });
-                }
-                
-                // Future earnings (next 2 quarters)
-                for (let q = 0; q < 2; q++) {
-                    const date = new Date(now);
-                    date.setMonth(date.getMonth() + (q * 3) + Math.random() * 30);
-                    
-                    data.push({
-                        symbol,
-                        date,
-                        type: 'future',
-                        analystExpectation: Math.random() > 0.5 ? 'beat' : Math.random() > 0.5 ? 'meet' : 'miss',
-                        confidence: Math.random(),
-                        marketCap: Math.random() * 2000 + 100,
-                        volume: Math.random() * 100000000 + 1000000,
-                        sector: getSectorForSymbol(symbol),
-                        expectedEPS: (Math.random() * 5 + 0.5).toFixed(2),
-                        consensusRating: ['Buy', 'Hold', 'Sell'][Math.floor(Math.random() * 3)],
-                        marketCapDataSource: `${API_CONFIG.BASE_URL_FMP}/historical-market-capitalization/${symbol}?apikey=${API_CONFIG.FMP_KEY}`,
-                        priceChangeDataSource: null // Future earnings don't have price change data yet
-                    });
-                }
-            });
-            
-            return data;
-        }
+        // Removed generateMockEarningsData - now using only earnings-icons data
 
         // Helper function to get sector for symbol (now using API data)
         function getSectorForSymbol(symbol) {
@@ -1596,17 +1438,34 @@
                 .attr('text-anchor', 'middle')
                 .attr('fill', '#64ffda')
                 .attr('class', 'loading-text')
-                .text('Loading real earnings data...');
+                .text('Loading earnings data from earnings-icons...');
             
             try {
-                const data = await generateRealData();
+                const data = await loadEarningsFromLocalFiles();
                 const now = new Date();
+                
+                console.log(`🎯 Timeline received ${data.length} earnings events`);
+                if (data.length > 0) {
+                    console.log('📅 Date range:', d3.extent(data, d => d.date));
+                    console.log('📊 Sample data point:', data[0]);
+                }
                 
                 // Store data globally for animations
                 timelineData = data;
                 
                 // Remove loading indicator
                 svg.select('.loading-text').remove();
+                
+                // Check if we have data
+                if (data.length === 0) {
+                    svg.append('text')
+                        .attr('x', width / 2)
+                        .attr('y', height / 2)
+                        .attr('text-anchor', 'middle')
+                        .attr('fill', '#ff6b6b')
+                        .text('No earnings data found');
+                    return;
+                }
                 
                 // Scales
                 const xScale = d3.scaleTime()
@@ -1651,9 +1510,13 @@
                     .attr('fill', d => {
                         if (d.type === 'past') {
                             // Color based on EPS beat/miss for real data
-                            if (d.eps && d.epsEstimate) {
-                                return d.eps > d.epsEstimate ? '#4444ff' : '#ff4444';
+                            if (d.actualEPS && d.expectedEPS) {
+                                return d.actualEPS > d.expectedEPS ? '#4444ff' : '#ff4444';
                             }
+                            // Use beat_miss_meet field if available
+                            if (d.beat_miss_meet === 'BEAT') return '#4444ff';
+                            if (d.beat_miss_meet === 'MISS') return '#ff4444';
+                            if (d.beat_miss_meet === 'MEET') return '#888888';
                             // Fallback to prediction accuracy
                             if (d.predictionAccuracy > 0.7) return '#4444ff';
                             if (d.predictionAccuracy > 0.4) return '#888888';
