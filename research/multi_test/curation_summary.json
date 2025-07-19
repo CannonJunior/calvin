@@ -1,0 +1,11 @@
+{
+  "curation_summary": {
+    "total_processed": 2,
+    "successful": 2,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "failed_symbols": [],
+  "output_directory": "multi_test",
+  "generated_at": "2025-07-19T12:00:29.188647"
+}
